@@ -51,6 +51,18 @@ dependencies {
 
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    // Lifecycle (ViewModel & LiveData)
+    val lifecycle_version = "2.8.1"
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+
+    // Coroutines untuk proses asynchronous
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
+    implementation("androidx.fragment:fragment-ktx:1.7.0") // Or the latest version
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
