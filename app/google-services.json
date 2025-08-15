@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "875422246582",
+    "project_id": "absenrenang",
+    "storage_bucket": "absenrenang.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875422246582:android:4db78968e85147b14fe817",
+        "android_client_info": {
+          "package_name": "com.coachbro.absenrenang"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8PXGU4hmlp3sGYn4HbnybhRV8IPZZDPw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
