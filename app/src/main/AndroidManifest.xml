@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbsenRenang">
         <activity
+            android:name=".ui.payment.PaymentDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.payment.PaymentActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.studentlist.StudentListActivity"
             android:exported="false" />
         <activity

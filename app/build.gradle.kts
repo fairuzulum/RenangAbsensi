@@ -53,8 +53,9 @@ dependencies {
 
     // Lifecycle (ViewModel & LiveData)
     val lifecycle_version = "2.8.1"
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+//    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+//    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
 
     // Coroutines untuk proses asynchronous
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")

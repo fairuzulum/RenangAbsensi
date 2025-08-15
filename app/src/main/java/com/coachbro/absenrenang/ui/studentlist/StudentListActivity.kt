@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.coachbro.absenrenang.databinding.ActivityStudentListBinding
 import com.coachbro.absenrenang.viewmodel.StudentListViewModel
+// Assuming your Student model is in this package, adjust if necessary
+import com.coachbro.absenrenang.data.model.Student
 
 class StudentListActivity : AppCompatActivity() {
 
@@ -35,7 +37,14 @@ class StudentListActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        studentAdapter = StudentAdapter()
+        // Pass a lambda for onItemClick
+        studentAdapter = StudentAdapter { student ->
+            // Handle the item click here.
+            // For example, you might want to navigate to a detail screen
+            // or show a Toast with the student's name.
+            Toast.makeText(this@StudentListActivity, "Clicked on: ${student.name}", Toast.LENGTH_SHORT).show()
+            // Replace 'student.name' with the actual property you want to display
+        }
         binding.rvStudents.apply {
             layoutManager = LinearLayoutManager(this@StudentListActivity)
             adapter = studentAdapter
