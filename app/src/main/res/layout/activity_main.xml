@@ -5,16 +5,82 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:padding="24dp"
+    tools:context=".ui.home.MainActivity">
 
     <TextView
+        android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Selamat Datang di Halaman Home!"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Menu Utama"
+        android:textSize="28sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/menuContainer"/>
+
+    <LinearLayout
+        android:id="@+id/menuContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAbsensi"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="16dp"
+            android:text="Absensi"
+            android:textSize="16sp"
+            app:icon="@drawable/ic_attendance"
+            app:iconGravity="textStart"
+            app:iconPadding="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPembayaran"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingVertical="16dp"
+            android:text="Pembayaran"
+            android:textSize="16sp"
+            app:icon="@drawable/ic_payment"
+            app:iconGravity="textStart"
+            app:iconPadding="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRegisterSiswa"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingVertical="16dp"
+            android:text="Register Siswa Baru"
+            android:textSize="16sp"
+            app:icon="@drawable/ic_register"
+            app:iconGravity="textStart"
+            app:iconPadding="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnListSiswa"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingVertical="16dp"
+            android:text="List Semua Siswa"
+            android:textSize="16sp"
+            app:icon="@drawable/ic_student_list"
+            app:iconGravity="textStart"
+            app:iconPadding="16dp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
