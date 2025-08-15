@@ -1,89 +1,35 @@
 // data/repository/StudentRepository.kt
 package com.coachbro.absenrenang.data.repository
 
-import com.coachbro.absenrenang.data.model.Student
-import com.coachbro.absenrenang.data.model.Payment
 import com.coachbro.absenrenang.data.model.Attendance
+import com.coachbro.absenrenang.data.model.Payment
+import com.coachbro.absenrenang.data.model.Student
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.util.Calendar
+import java.util.Date
 
 class StudentRepository {
 
     private val db = FirebaseFirestore.getInstance()
     private val studentCollection = db.collection("students")
 
-    // Fungsi suspend menandakan ini adalah fungsi asynchronous (coroutine)
-    // yang tidak akan memblokir main thread.
     suspend fun registerStudent(student: Student): Result<Unit> {
         return try {
-            // Firestore akan otomatis membuat ID jika kita tidak menentukannya
             studentCollection.add(student).await()
-            Result.success(Unit) // Mengembalikan hasil sukses
+            Result.success(Unit)
         } catch (e: Exception) {
-            // Mengembalikan hasil gagal beserta exception-nya
             Result.failure(e)
         }
     }
 
-    // Fungsi suspend menandakan ini adalah fungsi asynchronous (coroutine)
-    // yang tidak akan memblokir main thread.
     suspend fun getAllStudents(): Result<List<Student>> {
         return try {
             val snapshot = studentCollection.get().await()
-            // Mengubah hasil query dari Firestore menjadi List<Student>
             val students = snapshot.toObjects(Student::class.java)
             Result.success(students)
         } catch (e: Exception) {
             Result.failure(e)
-        }
-    }
-
-    // FUNGSI BARU: Mengambil riwayat pembayaran seorang siswa
-    suspend fun getPaymentHistory(studentId: String): Result<List<Payment>> {
-        return try {
-            val snapshot = studentCollection.document(studentId)
-                .collection("payments") // Mengakses sub-collection 'payments'
-                .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
-                .get()
-                .await()
-            val payments = snapshot.toObjects(Payment::class.java)
-            Result.success(payments)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    // FUNGSI BARU: Memproses pembayaran menggunakan Transaction
-    suspend fun processPayment(studentId: String, amount: Long): Result<Unit> {
-        // Logika bisnis: 250rb = 4 sesi
-        val sessionsToAdd = (amount / 250000) * 4
-        if (sessionsToAdd <= 0) {
-            return Result.failure(Exception("Jumlah pembayaran tidak valid"))
-        }
-
-        try {
-            // Transaction memastikan semua operasi di dalamnya (baca, tulis, update)
-            // berhasil semua, atau gagal semua. Ini mencegah data korup.
-            db.runTransaction { transaction ->
-                val studentRef = studentCollection.document(studentId)
-                val studentSnapshot = transaction.get(studentRef)
-
-                val currentSessions = studentSnapshot.getLong("remainingSessions")?.toInt() ?: 0
-                val newTotalSessions = currentSessions + sessionsToAdd
-
-                // 1. Update sisa sesi di dokumen siswa
-                transaction.update(studentRef, "remainingSessions", newTotalSessions)
-
-                // 2. Buat catatan baru di sub-collection 'payments'
-                val paymentRef = studentRef.collection("payments").document()
-                val newPayment = Payment(amount = amount, sessionsAdded = sessionsToAdd)
-                transaction.set(paymentRef, newPayment)
-
-                // Jika tidak ada error, transaction akan commit secara otomatis
-            }.await()
-            return Result.success(Unit)
-        } catch (e: Exception) {
-            return Result.failure(e)
         }
     }
 
@@ -96,11 +42,47 @@ class StudentRepository {
         }
     }
 
-    // FUNGSI BARU: Mengambil riwayat absensi seorang siswa
+    suspend fun getPaymentHistory(studentId: String): Result<List<Payment>> {
+        return try {
+            val snapshot = studentCollection.document(studentId)
+                .collection("payments")
+                .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .get()
+                .await()
+            val payments = snapshot.toObjects(Payment::class.java)
+            Result.success(payments)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun processPayment(studentId: String, amount: Long): Result<Unit> {
+        val sessionsToAdd = (amount / 250000) * 4
+        if (sessionsToAdd <= 0) {
+            return Result.failure(Exception("Jumlah pembayaran tidak valid"))
+        }
+
+        try {
+            db.runTransaction { transaction ->
+                val studentRef = studentCollection.document(studentId)
+                val studentSnapshot = transaction.get(studentRef)
+                val currentSessions = studentSnapshot.getLong("remainingSessions")?.toInt() ?: 0
+                val newTotalSessions = currentSessions + sessionsToAdd
+                transaction.update(studentRef, "remainingSessions", newTotalSessions)
+                val paymentRef = studentRef.collection("payments").document()
+                val newPayment = Payment(amount = amount, sessionsAdded = sessionsToAdd.toLong())
+                transaction.set(paymentRef, newPayment)
+            }.await()
+            return Result.success(Unit)
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
+    }
+
     suspend fun getAttendanceHistory(studentId: String): Result<List<Attendance>> {
         return try {
             val snapshot = studentCollection.document(studentId)
-                .collection("attendances") // Mengakses sub-collection 'attendances'
+                .collection("attendances")
                 .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
                 .await()
@@ -111,36 +93,64 @@ class StudentRepository {
         }
     }
 
-    // FUNGSI BARU: Memproses absensi menggunakan Transaction
     suspend fun processAttendance(studentId: String): Result<Unit> {
         try {
             db.runTransaction { transaction ->
                 val studentRef = studentCollection.document(studentId)
                 val studentSnapshot = transaction.get(studentRef)
-
                 val currentSessions = studentSnapshot.getLong("remainingSessions")?.toInt() ?: 0
 
-                // VALIDASI PENTING: Jangan biarkan absensi jika sesi sudah habis.
                 if (currentSessions <= 0) {
                     throw Exception("Sesi pertemuan siswa sudah habis (0).")
                 }
-
                 val newTotalSessions = currentSessions - 1
-
-                // 1. Update (kurangi) sisa sesi di dokumen siswa
                 transaction.update(studentRef, "remainingSessions", newTotalSessions)
-
-                // 2. Buat catatan baru di sub-collection 'attendances'
                 val attendanceRef = studentRef.collection("attendances").document()
-                val newAttendance = Attendance() // Tanggal akan diisi otomatis oleh server
+                val newAttendance = Attendance()
                 transaction.set(attendanceRef, newAttendance)
-
             }.await()
             return Result.success(Unit)
         } catch (e: Exception) {
-            // Tangkap error (termasuk error "Sesi habis") dan kembalikan sebagai failure
             return Result.failure(e)
         }
     }
 
+    // ===============================================================
+    // FUNGSI BARU UNTUK VALIDASI
+    // ===============================================================
+    suspend fun checkIfStudentAttendedToday(studentId: String): Result<Boolean> {
+        return try {
+            // 1. Siapkan rentang waktu untuk "hari ini"
+            val calendar = Calendar.getInstance()
+
+            // Set waktu ke awal hari (pukul 00:00:00.000)
+            calendar.set(Calendar.HOUR_OF_DAY, 0)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
+            val startOfDay: Date = calendar.time
+
+            // Set waktu ke akhir hari (pukul 23:59:59.999)
+            calendar.set(Calendar.HOUR_OF_DAY, 23)
+            calendar.set(Calendar.MINUTE, 59)
+            calendar.set(Calendar.SECOND, 59)
+            calendar.set(Calendar.MILLISECOND, 999)
+            val endOfDay: Date = calendar.time
+
+            // 2. Buat query ke Firestore untuk mencari data dalam rentang waktu tersebut
+            val snapshot = studentCollection.document(studentId)
+                .collection("attendances")
+                .whereGreaterThanOrEqualTo("date", startOfDay)
+                .whereLessThanOrEqualTo("date", endOfDay)
+                .limit(1) // Optimasi: kita hanya butuh 1 dokumen untuk membuktikan
+                .get()
+                .await()
+
+            // 3. Kembalikan hasilnya. Jika snapshot tidak kosong, berarti sudah ada data (sudah absen)
+            Result.success(!snapshot.isEmpty)
+        } catch (e: Exception) {
+            // Jika terjadi error saat query, kembalikan failure
+            Result.failure(e)
+        }
+    }
 }

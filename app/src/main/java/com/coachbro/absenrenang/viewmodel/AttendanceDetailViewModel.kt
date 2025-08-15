@@ -22,14 +22,29 @@ class AttendanceDetailViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    // ===============================================================
+    // LiveData BARU untuk menyimpan status absensi hari ini
+    // ===============================================================
+    private val _hasAttendedToday = MutableLiveData<Boolean>()
+    val hasAttendedToday: LiveData<Boolean> = _hasAttendedToday
+
     private val _attendanceStatus = MutableLiveData<Result<Unit>>()
     val attendanceStatus: LiveData<Result<Unit>> = _attendanceStatus
 
     fun fetchStudentDetails(studentId: String) {
         _isLoading.value = true
         viewModelScope.launch {
+            // Mengambil semua data yang dibutuhkan secara bersamaan
             repository.getStudentById(studentId).onSuccess { _student.postValue(it) }
             repository.getAttendanceHistory(studentId).onSuccess { _attendanceHistory.postValue(it) }
+
+            // ===============================================================
+            // Panggil fungsi repository yang baru untuk mengecek absensi
+            // ===============================================================
+            repository.checkIfStudentAttendedToday(studentId).onSuccess {
+                _hasAttendedToday.postValue(it)
+            }
+
             _isLoading.postValue(false)
         }
     }
@@ -39,6 +54,15 @@ class AttendanceDetailViewModel : ViewModel() {
         viewModelScope.launch {
             val result = repository.processAttendance(studentId)
             _attendanceStatus.postValue(result)
+
+            // ===============================================================
+            // Optimasi: Jika absensi berhasil, langsung update status di ViewModel
+            // tanpa perlu query ulang. Ini membuat UI lebih responsif.
+            // ===============================================================
+            if (result.isSuccess) {
+                _hasAttendedToday.postValue(true)
+            }
+
             _isLoading.postValue(false)
         }
     }
