@@ -3,6 +3,7 @@ package com.coachbro.absenrenang.data.repository
 
 import com.coachbro.absenrenang.data.model.Student
 import com.coachbro.absenrenang.data.model.Payment
+import com.coachbro.absenrenang.data.model.Attendance
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -92,6 +93,53 @@ class StudentRepository {
             if (student != null) Result.success(student) else Result.failure(Exception("Siswa tidak ditemukan"))
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    // FUNGSI BARU: Mengambil riwayat absensi seorang siswa
+    suspend fun getAttendanceHistory(studentId: String): Result<List<Attendance>> {
+        return try {
+            val snapshot = studentCollection.document(studentId)
+                .collection("attendances") // Mengakses sub-collection 'attendances'
+                .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .get()
+                .await()
+            val attendances = snapshot.toObjects(Attendance::class.java)
+            Result.success(attendances)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // FUNGSI BARU: Memproses absensi menggunakan Transaction
+    suspend fun processAttendance(studentId: String): Result<Unit> {
+        try {
+            db.runTransaction { transaction ->
+                val studentRef = studentCollection.document(studentId)
+                val studentSnapshot = transaction.get(studentRef)
+
+                val currentSessions = studentSnapshot.getLong("remainingSessions")?.toInt() ?: 0
+
+                // VALIDASI PENTING: Jangan biarkan absensi jika sesi sudah habis.
+                if (currentSessions <= 0) {
+                    throw Exception("Sesi pertemuan siswa sudah habis (0).")
+                }
+
+                val newTotalSessions = currentSessions - 1
+
+                // 1. Update (kurangi) sisa sesi di dokumen siswa
+                transaction.update(studentRef, "remainingSessions", newTotalSessions)
+
+                // 2. Buat catatan baru di sub-collection 'attendances'
+                val attendanceRef = studentRef.collection("attendances").document()
+                val newAttendance = Attendance() // Tanggal akan diisi otomatis oleh server
+                transaction.set(attendanceRef, newAttendance)
+
+            }.await()
+            return Result.success(Unit)
+        } catch (e: Exception) {
+            // Tangkap error (termasuk error "Sesi habis") dan kembalikan sebagai failure
+            return Result.failure(e)
         }
     }
 

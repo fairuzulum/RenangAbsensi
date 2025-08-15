@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbsenRenang">
         <activity
+            android:name=".ui.attendance.AttendanceDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.attendance.AttendanceActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.payment.PaymentDetailActivity"
             android:exported="false" />
         <activity

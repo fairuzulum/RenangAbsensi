@@ -9,6 +9,7 @@ import com.coachbro.absenrenang.databinding.ActivityMainBinding
 import com.coachbro.absenrenang.ui.register.RegisterActivity
 import com.coachbro.absenrenang.ui.studentlist.StudentListActivity
 import com.coachbro.absenrenang.ui.payment.PaymentActivity
+import com.coachbro.absenrenang.ui.attendance.AttendanceActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,6 +37,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnPembayaran.setOnClickListener {
             startActivity(Intent(this, PaymentActivity::class.java))
+        }
+
+        binding.btnAbsensi.setOnClickListener {
+            startActivity(Intent(this, AttendanceActivity::class.java))
         }
 
 
