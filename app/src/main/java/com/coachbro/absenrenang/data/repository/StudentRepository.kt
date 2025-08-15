@@ -7,7 +7,6 @@ import kotlinx.coroutines.tasks.await
 
 class StudentRepository {
 
-    // Mendapatkan instance dari Firestore
     private val db = FirebaseFirestore.getInstance()
     private val studentCollection = db.collection("students")
 
@@ -20,6 +19,19 @@ class StudentRepository {
             Result.success(Unit) // Mengembalikan hasil sukses
         } catch (e: Exception) {
             // Mengembalikan hasil gagal beserta exception-nya
+            Result.failure(e)
+        }
+    }
+
+    // Fungsi suspend menandakan ini adalah fungsi asynchronous (coroutine)
+    // yang tidak akan memblokir main thread.
+    suspend fun getAllStudents(): Result<List<Student>> {
+        return try {
+            val snapshot = studentCollection.get().await()
+            // Mengubah hasil query dari Firestore menjadi List<Student>
+            val students = snapshot.toObjects(Student::class.java)
+            Result.success(students)
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

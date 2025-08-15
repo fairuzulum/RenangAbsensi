@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.coachbro.absenrenang.databinding.ActivityMainBinding
 import com.coachbro.absenrenang.ui.register.RegisterActivity
+import com.coachbro.absenrenang.ui.studentlist.StudentListActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,6 +27,13 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
+
+        binding.btnListSiswa.setOnClickListener {
+            val intent = Intent(this, StudentListActivity::class.java)
+            startActivity(intent)
+        }
+
+
 
         // Listener untuk tombol lain akan kita tambahkan di tahap berikutnya
         // binding.btnAbsensi.setOnClickListener { ... }
