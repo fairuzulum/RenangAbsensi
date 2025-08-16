@@ -33,7 +33,7 @@ class StudentAdapter(
             val studentInfo = mutableListOf<String>()
             student.age?.let { studentInfo.add("Umur: $it") }
             student.parentName?.let { studentInfo.add("Ortu: $it") }
-            binding.tvStudentInfo.text = studentInfo.joinToString(", ")
+//            binding.tvStudentInfo.text = studentInfo.joinToString(", ")
         }
     }
 
