@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/white"
     android:padding="24dp">
 
     <ImageView
@@ -26,17 +25,50 @@
         android:textStyle="bold"
         tools:text="Nama Siswa Lengkap" />
 
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp" />
+
     <TextView
-        android:id="@+id/tvDetailRemainingSessions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="4dp"
-        android:textSize="16sp"
-        android:textColor="@color/primary_blue"
-        android:textStyle="bold"
-        tools:text="Sisa Sesi: 8" />
+        android:text="Ubah Sisa Sesi"
+        android:textSize="14sp"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilSessions"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Jumlah Sesi">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSessions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberSigned" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveSessions"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:paddingHorizontal="12dp"
+            app:icon="@drawable/ic_checklist"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp" />
+
+    </LinearLayout>
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,14 +79,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
-
         <TextView
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Umur"
             android:textSize="16sp"/>
-
         <TextView
             android:id="@+id/tvDetailAge"
             android:layout_width="wrap_content"
@@ -64,21 +94,18 @@
             android:textSize="16sp"
             tools:text="10 Tahun"/>
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
-
         <TextView
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Nama Orang Tua"
             android:textSize="16sp"/>
-
         <TextView
             android:id="@+id/tvDetailParentName"
             android:layout_width="wrap_content"
@@ -88,21 +115,18 @@
             android:textSize="16sp"
             tools:text="Bapak Budi"/>
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
-
         <TextView
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="No. Telp Orang Tua"
             android:textSize="16sp"/>
-
         <TextView
             android:id="@+id/tvDetailParentPhone"
             android:layout_width="wrap_content"
@@ -112,6 +136,7 @@
             android:textSize="16sp"
             tools:text="08123456789"/>
     </LinearLayout>
+
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -149,4 +174,3 @@
     </LinearLayout>
 
 </LinearLayout>
-

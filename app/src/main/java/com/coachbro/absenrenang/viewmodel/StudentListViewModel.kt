@@ -83,4 +83,15 @@ class StudentListViewModel : ViewModel() {
             _deleteStatus.postValue(result)
         }
     }
+
+    // ===============================================================
+    // FUNGSI BARU UNTUK MEMANGGIL REPOSITORY UPDATE SESI
+    // ===============================================================
+    fun updateStudentSessions(studentId: String, newSessionCount: Int) {
+        viewModelScope.launch {
+            val result = repository.updateStudentSessions(studentId, newSessionCount)
+            // Kita bisa gunakan _updateStatus yang sudah ada untuk memberitahu UI
+            _updateStatus.postValue(result)
+        }
+    }
 }

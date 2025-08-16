@@ -211,4 +211,20 @@ class StudentRepository {
             Result.failure(e)
         }
     }
+
+
+    // ===============================================================
+    // FUNGSI BARU UNTUK UPDATE SESI SECARA MANUAL
+    // ===============================================================
+    suspend fun updateStudentSessions(studentId: String, newSessionCount: Int): Result<Unit> {
+        return try {
+            // Menggunakan fungsi 'update' untuk mengubah satu field spesifik
+            studentCollection.document(studentId)
+                .update("remainingSessions", newSessionCount)
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
