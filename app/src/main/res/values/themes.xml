@@ -1,5 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <style name="Base.Theme.AbsenRenang" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary_blue</item>
     </style>
 
     <style name="Theme.AbsenRenang" parent="Base.Theme.AbsenRenang" />
@@ -35,14 +37,6 @@
         <item name="android:padding">16dp</item>
     </style>
 
-    <style name="ShapeAppearance.App.Corner.Left" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSizeTopLeft">16dp</item>
-        <item name="cornerSizeBottomLeft">16dp</item>
-        <item name="cornerSizeTopRight">0dp</item>
-        <item name="cornerSizeBottomRight">0dp</item>
-    </style>
-
     <style name="MainMenuIcon">
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
@@ -55,6 +49,14 @@
         <item name="android:layout_marginTop">12dp</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Corner.Left" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeBottomLeft">16dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
 </resources>

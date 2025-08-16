@@ -72,14 +72,6 @@
                     android:textStyle="bold"
                     tools:text="8" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="-4dp"
-                    android:text="Sesi"
-                    android:textColor="@color/primary_blue"
-                    android:textSize="12sp"
-                    tools:ignore="SmallSp" />
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
