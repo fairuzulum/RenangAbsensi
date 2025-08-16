@@ -13,8 +13,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="48dp"
         android:layout_marginEnd="24dp"
-        android:text="Selamat Datang,"
+        android:text="Family Surya School Club (FSS)"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/tvSubtitle"
@@ -41,7 +42,7 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardAbsensi"
         style="@style/MainMenuCard"
-        android:backgroundTint="@color/white"
+        app:cardBackgroundColor="@color/sea_blue"
         app:layout_constraintBottom_toTopOf="@+id/cardRegister"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cardPembayaran"
@@ -53,11 +54,13 @@
 
             <ImageView
                 style="@style/MainMenuIcon"
-                android:src="@drawable/ic_attendance" />
+                android:src="@drawable/ic_attendance"
+                app:tint="@color/white"/>
 
             <TextView
                 style="@style/MainMenuText"
-                android:text="Absensi" />
+                android:text="Absen Kehadiran"
+                android:textColor="@color/white"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -121,7 +124,7 @@
 
             <TextView
                 style="@style/MainMenuText"
-                android:text="List Siswa" />
+                android:text="Daftar Member FSS" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -148,7 +151,6 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-
     <TextView
         android:id="@+id/tvWatermark"
         android:layout_width="wrap_content"
@@ -160,4 +162,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
