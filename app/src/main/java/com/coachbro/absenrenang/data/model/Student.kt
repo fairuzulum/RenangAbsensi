@@ -7,17 +7,14 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Student(
-    // Anotasi @DocumentId memberitahu Firestore untuk otomatis mengisi field ini
-    // dengan ID dokumen saat data dibaca. Sangat berguna!
     @DocumentId
     val id: String = "",
 
+    // Nama lengkap (wajib)
     val name: String = "",
-    val age: Int? = null, // Nullable karena boleh tidak diisi
-    val parentName: String? = null, // Nullable
-    val parentPhone: String? = null, // Nullable
+    // Nama panggilan (opsional, tapi dianjurkan untuk pencarian)
+    val nickname: String? = null,
 
-    // Kita tambahkan ini dari sekarang untuk fitur pembayaran nanti.
-    // Default-nya 0 saat siswa baru mendaftar.
+    // Sisa sesi, tetap ada
     val remainingSessions: Int = 0
 ) : Parcelable

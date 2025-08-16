@@ -47,14 +47,13 @@ class AttendanceViewModel : ViewModel() {
     // Fungsi untuk memfilter daftar siswa berdasarkan input pencarian
     fun searchStudent(query: String) {
         val list = _originalStudents.value
-
         if (query.isBlank()) {
-            // Jika query kosong, tampilkan kembali semua siswa
             _filteredStudents.value = list
         } else {
-            // Jika ada query, filter daftar asli
             _filteredStudents.value = list?.filter { student ->
-                student.name.contains(query, ignoreCase = true)
+                // Cari di nama lengkap ATAU di nama panggilan
+                student.name.contains(query, ignoreCase = true) ||
+                        student.nickname?.contains(query, ignoreCase = true) == true
             }
         }
     }

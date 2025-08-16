@@ -3,21 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:background="#F4F8FB"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F4F8FB"
     android:orientation="vertical"
     tools:context=".ui.register.RegisterActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:background="@color/primary_blue"
-        app:titleTextColor="@color/white"
-        app:navigationIconTint="@color/white"
         android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/white"
         app:title="Daftarkan Siswa Baru"
-        app:navigationIcon="@drawable/ic_arrow_back" />
+        app:titleTextColor="@color/white" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -33,59 +33,27 @@
                 android:id="@+id/tilName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nama Lengkap Siswa (Wajib)">
+                android:hint="Nama Lengkap (Wajib)">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName|textCapWords" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilAge"
+                android:id="@+id/tilNickname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Umur (Opsional)">
+                android:hint="Nama Panggilan (Opsional)">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etAge"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilParentName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Nama Orang Tua (Opsional)">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etParentName"
+                    android:id="@+id/etNickname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName|textCapWords" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilParentPhone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="No. Telp Orang Tua (Opsional)">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etParentPhone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
@@ -95,7 +63,6 @@
                 android:layout_marginTop="32dp"
                 android:paddingVertical="16dp"
                 android:text="Simpan Data Siswa" />
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

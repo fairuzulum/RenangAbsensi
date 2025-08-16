@@ -34,17 +34,29 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="1"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tvStudentNickname"
             app:layout_constraintEnd_toStartOf="@+id/cardViewSessions"
             app:layout_constraintStart_toEndOf="@id/ivIcon"
-            app:layout_constraintTop_toTopOf="parent"
             tools:text="Fairuz Ulum" />
 
-
+        <TextView
+            android:id="@+id/tvStudentNickname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:alpha="0.8"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/tvStudentName"
+            app:layout_constraintStart_toStartOf="@id/tvStudentName"
+            app:layout_constraintEnd_toEndOf="@id/tvStudentName"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="(Fairuz)" />
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardViewSessions"
             android:layout_width="wrap_content"
@@ -71,6 +83,15 @@
                     android:textSize="22sp"
                     android:textStyle="bold"
                     tools:text="8" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-4dp"
+                    android:text="Sesi"
+                    android:textColor="@color/primary_blue"
+                    android:textSize="12sp"
+                    tools:ignore="SmallSp" />
 
             </LinearLayout>
 

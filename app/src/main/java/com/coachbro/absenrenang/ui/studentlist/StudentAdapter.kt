@@ -2,6 +2,7 @@
 package com.coachbro.absenrenang.ui.studentlist
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -9,31 +10,40 @@ import androidx.recyclerview.widget.RecyclerView
 import com.coachbro.absenrenang.data.model.Student
 import com.coachbro.absenrenang.databinding.ItemStudentBinding
 
-// TAMBAHKAN parameter onItemClick di constructor
 class StudentAdapter(
     private val onItemClick: (Student) -> Unit
 ) : ListAdapter<Student, StudentAdapter.StudentViewHolder>(StudentDiffCallback()) {
 
     inner class StudentViewHolder(private val binding: ItemStudentBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        // TAMBAHKAN blok init untuk mendaftarkan listener klik
         init {
             binding.root.setOnClickListener {
-                // Pastikan posisi item valid sebelum memanggil listener
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
                     onItemClick(getItem(bindingAdapterPosition))
                 }
             }
         }
 
+        /**
+         * Fungsi 'bind' ini dipanggil untuk setiap item yang akan ditampilkan.
+         * Di sinilah kita akan menambahkan logika untuk nama panggilan.
+         */
         fun bind(student: Student) {
             binding.tvStudentName.text = student.name
-            binding.tvRemainingSessions.text = "${student.remainingSessions} Sesi"
+            binding.tvRemainingSessions.text = student.remainingSessions.toString()
 
-            val studentInfo = mutableListOf<String>()
-            student.age?.let { studentInfo.add("Umur: $it") }
-            student.parentName?.let { studentInfo.add("Ortu: $it") }
-//            binding.tvStudentInfo.text = studentInfo.joinToString(", ")
+            // ===============================================================
+            // LOGIKA BARU UNTUK MENAMPILKAN NAMA PANGGILAN ADA DI SINI
+            // ===============================================================
+            if (student.nickname.isNullOrBlank()) {
+                // Jika nama panggilan kosong atau null, sembunyikan TextView-nya
+                binding.tvStudentNickname.visibility = View.GONE
+            } else {
+                // Jika ada, tampilkan TextView-nya dan isi datanya
+                binding.tvStudentNickname.visibility = View.VISIBLE
+                binding.tvStudentNickname.text = "(${student.nickname})"
+            }
+            // ===============================================================
         }
     }
 
@@ -50,6 +60,7 @@ class StudentAdapter(
         override fun areItemsTheSame(oldItem: Student, newItem: Student): Boolean {
             return oldItem.id == newItem.id
         }
+
         override fun areContentsTheSame(oldItem: Student, newItem: Student): Boolean {
             return oldItem == newItem
         }

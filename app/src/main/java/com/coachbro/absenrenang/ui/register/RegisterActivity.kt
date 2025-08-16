@@ -24,7 +24,6 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        // Aksi untuk tombol kembali di toolbar
         binding.toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
@@ -32,12 +31,10 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.btnSave.setOnClickListener {
-            val name = binding.etName.text.toString().trim()
-            val age = binding.etAge.text.toString().trim()
-            val parentName = binding.etParentName.text.toString().trim()
-            val parentPhone = binding.etParentPhone.text.toString().trim()
+            val fullName = binding.etName.text.toString().trim()
+            val nickname = binding.etNickname.text.toString().trim() // Ambil dari etNickname
 
-            viewModel.registerStudent(name, age, parentName, parentPhone)
+            viewModel.registerStudent(fullName, nickname)
         }
     }
 
@@ -45,9 +42,8 @@ class RegisterActivity : AppCompatActivity() {
         viewModel.registrationStatus.observe(this) { result ->
             result.onSuccess {
                 Toast.makeText(this, "Siswa berhasil didaftarkan!", Toast.LENGTH_SHORT).show()
-                finish() // Kembali ke halaman sebelumnya (Home)
+                finish()
             }.onFailure { exception ->
-                // Tampilkan pesan error
                 binding.tilName.error = if(exception.message?.contains("kosong") == true) exception.message else null
                 Toast.makeText(this, "Error: ${exception.message}", Toast.LENGTH_LONG).show()
             }

@@ -42,8 +42,10 @@ class PaymentViewModel : ViewModel() {
         if (query.isBlank()) {
             _filteredStudents.value = list
         } else {
-            _filteredStudents.value = list?.filter {
-                it.name.contains(query, ignoreCase = true)
+            _filteredStudents.value = list?.filter { student ->
+                // Cari di nama lengkap ATAU di nama panggilan
+                student.name.contains(query, ignoreCase = true) ||
+                        student.nickname?.contains(query, ignoreCase = true) == true
             }
         }
     }

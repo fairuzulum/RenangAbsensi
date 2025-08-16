@@ -83,44 +83,47 @@ class StudentListActivity : AppCompatActivity() {
         viewModel.deleteStatus.observe(this) { result ->
             result.onSuccess {
                 Toast.makeText(this, "Siswa berhasil dihapus!", Toast.LENGTH_SHORT).show()
-                viewModel.fetchAllStudents()
+                viewModel.fetchAllStudents() // Refresh list setelah hapus
             }.onFailure {
                 Toast.makeText(this, "Gagal menghapus: ${it.message}", Toast.LENGTH_LONG).show()
             }
         }
 
-        // Tambahkan observer untuk status update (termasuk update sesi)
+        // Menambahkan observer untuk status update, termasuk update sesi dan edit data
         viewModel.updateStatus.observe(this) { result ->
             result.onSuccess {
-                Toast.makeText(this, "Sesi berhasil diperbarui!", Toast.LENGTH_SHORT).show()
-                viewModel.fetchAllStudents()
+                Toast.makeText(this, "Data berhasil diperbarui!", Toast.LENGTH_SHORT).show()
+                viewModel.fetchAllStudents() // Refresh list setelah update
             }.onFailure {
-                Toast.makeText(this, "Gagal memperbarui sesi: ${it.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Gagal memperbarui data: ${it.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
 
     private fun showStudentDetailDialog(student: Student) {
+        // Menggunakan inflate untuk membuat view dari layout XML dialog
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_student_detail, null)
 
-        // Referensi ke semua view di dalam dialog
+        // Referensi ke semua view di dalam dialog, termasuk yang baru
         val tvName = dialogView.findViewById<TextView>(R.id.tvDetailStudentName)
-        val tvAge = dialogView.findViewById<TextView>(R.id.tvDetailAge)
-        val tvParentName = dialogView.findViewById<TextView>(R.id.tvDetailParentName)
-        val tvParentPhone = dialogView.findViewById<TextView>(R.id.tvDetailParentPhone)
+        val tvNickname = dialogView.findViewById<TextView>(R.id.tvDetailNickname)
         val etSessions = dialogView.findViewById<TextInputEditText>(R.id.etSessions)
         val btnSaveSessions = dialogView.findViewById<Button>(R.id.btnSaveSessions)
         val btnEdit = dialogView.findViewById<Button>(R.id.btnEdit)
         val btnDelete = dialogView.findViewById<Button>(R.id.btnDelete)
 
-        // Mengisi data awal
+        // Mengisi data awal ke dalam view
         tvName.text = student.name
-        etSessions.setText(student.remainingSessions.toString()) // Set sisa sesi di EditText
-        tvAge.text = student.age?.toString()?.plus(" Tahun") ?: "-"
-        tvParentName.text = student.parentName ?: "-"
-        tvParentPhone.text = student.parentPhone ?: "-"
+        etSessions.setText(student.remainingSessions.toString())
 
-        // Membuat dialog
+        if (student.nickname.isNullOrBlank()) {
+            tvNickname.visibility = View.GONE
+        } else {
+            tvNickname.visibility = View.VISIBLE
+            tvNickname.text = "(${student.nickname})"
+        }
+
+        // Membuat dialog menggunakan MaterialAlertDialogBuilder
         val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .create()
@@ -134,9 +137,10 @@ class StudentListActivity : AppCompatActivity() {
             }
             val newSessionCount = newSessionString.toInt()
             viewModel.updateStudentSessions(student.id, newSessionCount)
-            dialog.dismiss()
+            dialog.dismiss() // Tutup dialog setelah aksi
         }
 
+        // Memberi aksi pada tombol Edit
         btnEdit.setOnClickListener {
             dialog.dismiss()
             val intent = Intent(this, EditStudentActivity::class.java).apply {
@@ -145,12 +149,13 @@ class StudentListActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Memberi aksi pada tombol Hapus
         btnDelete.setOnClickListener {
             dialog.dismiss()
             showDeleteConfirmationDialog(student)
         }
 
-        dialog.show()
+        dialog.show() // Menampilkan dialog ke layar
     }
 
     private fun showDeleteConfirmationDialog(student: Student) {

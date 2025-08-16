@@ -55,11 +55,12 @@ class StudentListViewModel : ViewModel() {
     fun searchStudent(query: String) {
         val list = _originalStudents.value
         if (query.isBlank()) {
-            _filteredStudents.value = list // Kembalikan ke daftar asli jika query kosong
+            _filteredStudents.value = list
         } else {
-            // Filter daftar asli berdasarkan query
             _filteredStudents.value = list?.filter { student ->
-                student.name.contains(query, ignoreCase = true)
+                // Cari di nama lengkap ATAU di nama panggilan
+                student.name.contains(query, ignoreCase = true) ||
+                        student.nickname?.contains(query, ignoreCase = true) == true
             }
         }
     }
