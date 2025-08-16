@@ -17,11 +17,11 @@
         android:text="Selamat Datang,"
         android:textSize="28sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/tvSubtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tvSubtitle"
-        app:layout_constraintVertical_chainStyle="packed"/>
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/tvSubtitle"
@@ -32,26 +32,29 @@
         android:layout_marginBottom="32dp"
         android:text="Silakan kelola data absensi Anda."
         android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/cardAbsensi"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        app:layout_constraintBottom_toTopOf="@id/cardAbsensi"/>
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardAbsensi"
         style="@style/MainMenuCard"
+        android:backgroundTint="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/cardRegister"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cardPembayaran"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_chainStyle="packed">
 
         <LinearLayout style="@style/MainMenuContent">
+
             <ImageView
                 style="@style/MainMenuIcon"
                 android:src="@drawable/ic_attendance" />
+
             <TextView
                 style="@style/MainMenuText"
                 android:text="Absensi" />
@@ -61,15 +64,18 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardPembayaran"
         style="@style/MainMenuCard"
+        android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/cardAbsensi"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cardAbsensi"
         app:layout_constraintTop_toTopOf="@id/cardAbsensi">
 
         <LinearLayout style="@style/MainMenuContent">
+
             <ImageView
                 style="@style/MainMenuIcon"
                 android:src="@drawable/ic_payment" />
+
             <TextView
                 style="@style/MainMenuText"
                 android:text="Pembayaran" />
@@ -80,15 +86,18 @@
         android:id="@+id/cardRegister"
         style="@style/MainMenuCard"
         android:layout_marginTop="16dp"
+        android:backgroundTint="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/cardFinancial"
         app:layout_constraintEnd_toStartOf="@+id/cardListSiswa"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardAbsensi">
 
         <LinearLayout style="@style/MainMenuContent">
+
             <ImageView
                 style="@style/MainMenuIcon"
                 android:src="@drawable/ic_register" />
+
             <TextView
                 style="@style/MainMenuText"
                 android:text="Register Siswa" />
@@ -98,15 +107,18 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardListSiswa"
         style="@style/MainMenuCard"
+        android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/cardRegister"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cardRegister"
         app:layout_constraintTop_toTopOf="@id/cardRegister">
 
         <LinearLayout style="@style/MainMenuContent">
+
             <ImageView
                 style="@style/MainMenuIcon"
                 android:src="@drawable/ic_student_list" />
+
             <TextView
                 style="@style/MainMenuText"
                 android:text="List Siswa" />
@@ -117,20 +129,35 @@
         android:id="@+id/cardFinancial"
         style="@style/MainMenuCard"
         android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardRegister"
+        android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardRegister"
         app:layout_constraintWidth_percent="0.4">
 
         <LinearLayout style="@style/MainMenuContent">
+
             <ImageView
                 style="@style/MainMenuIcon"
                 android:src="@drawable/ic_finance" />
+
             <TextView
                 style="@style/MainMenuText"
                 android:text="Keuangan" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+
+    <TextView
+        android:id="@+id/tvWatermark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Created by Fairuz"
+        android:textColor="#9E9E9E"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
