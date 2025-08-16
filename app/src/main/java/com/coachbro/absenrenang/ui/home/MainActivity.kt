@@ -10,6 +10,7 @@ import com.coachbro.absenrenang.ui.register.RegisterActivity
 import com.coachbro.absenrenang.ui.studentlist.StudentListActivity
 import com.coachbro.absenrenang.ui.payment.PaymentActivity
 import com.coachbro.absenrenang.ui.attendance.AttendanceActivity
+import com.coachbro.absenrenang.ui.financial.FinancialReportActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,6 +43,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.cardAbsensi.setOnClickListener {
             startActivity(Intent(this, AttendanceActivity::class.java))
+        }
+
+        binding.cardFinancial.setOnClickListener {
+            startActivity(Intent(this, FinancialReportActivity::class.java))
         }
     }
 }

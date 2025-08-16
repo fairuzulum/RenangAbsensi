@@ -4,10 +4,16 @@ package com.coachbro.absenrenang.data.repository
 import com.coachbro.absenrenang.data.model.Attendance
 import com.coachbro.absenrenang.data.model.Payment
 import com.coachbro.absenrenang.data.model.Student
+import com.coachbro.absenrenang.data.model.FinancialReport
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import java.util.Calendar
 import java.util.Date
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.toObject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 class StudentRepository {
 
@@ -150,6 +156,53 @@ class StudentRepository {
             Result.success(!snapshot.isEmpty)
         } catch (e: Exception) {
             // Jika terjadi error saat query, kembalikan failure
+            Result.failure(e)
+        }
+    }
+
+    // ===============================================================
+    // FUNGSI BARU UNTUK MENGAMBIL LAPORAN KEUANGAN
+    // ===============================================================
+    suspend fun getFinancialReport(): Result<List<FinancialReport>> {
+        return try {
+            // Kita gunakan coroutineScope untuk menjalankan beberapa query secara paralel
+            coroutineScope {
+                // 1. Ambil dulu semua data siswa
+                val studentsSnapshot = studentCollection.get().await()
+                val students = studentsSnapshot.toObjects(Student::class.java)
+
+                // 2. Untuk setiap siswa, buat tugas (deferred task) untuk mengambil riwayat pembayarannya
+                val reportTasks = students.map { student ->
+                    async {
+                        // Ambil semua dokumen dari sub-collection 'payments' untuk siswa ini
+                        val paymentsSnapshot = studentCollection.document(student.id)
+                            .collection("payments")
+                            .get()
+                            .await()
+
+                        // Ubah dokumen menjadi objek Payment
+                        val payments = paymentsSnapshot.toObjects(Payment::class.java)
+
+                        // Hitung total pembayaran untuk siswa ini
+                        val totalAmountForStudent = payments.sumOf { it.amount }
+
+                        // Buat objek FinancialReport jika ada pembayaran
+                        if (totalAmountForStudent > 0) {
+                            FinancialReport(studentName = student.name, totalAmount = totalAmountForStudent)
+                        } else {
+                            null // Kembalikan null jika siswa belum pernah bayar
+                        }
+                    }
+                }
+
+                // 3. Jalankan semua tugas secara bersamaan dan tunggu hasilnya
+                val reports = reportTasks.awaitAll()
+                    .filterNotNull() // Buang hasil yang null (siswa yang belum bayar)
+                    .sortedByDescending { it.totalAmount } // Urutkan dari pemasukan terbesar
+
+                Result.success(reports)
+            }
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
