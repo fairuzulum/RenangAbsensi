@@ -5,82 +5,108 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
+    android:background="#F4F8FB"
     tools:context=".ui.home.MainActivity">
 
     <TextView
         android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Menu Utama"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
+        android:text="Selamat Datang,"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/menuContainer"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/menuContainer"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tvSubtitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:text="Silakan kelola data absensi Anda."
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAbsensi"
-            style="@style/Widget.Material3.Button.Icon"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingVertical="16dp"
-            android:text="Absensi"
-            android:textSize="16sp"
-            app:icon="@drawable/ic_attendance"
-            app:iconGravity="textStart"
-            app:iconPadding="16dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPembayaran"
-            style="@style/Widget.Material3.Button.Icon"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:paddingVertical="16dp"
-            android:text="Pembayaran"
-            android:textSize="16sp"
-            app:icon="@drawable/ic_payment"
-            app:iconGravity="textStart"
-            app:iconPadding="16dp" />
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardAbsensi"
+        style="@style/MainMenuCard"
+        app:layout_constraintBottom_toTopOf="@+id/cardRegister"
+        app:layout_constraintEnd_toStartOf="@+id/cardPembayaran"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnRegisterSiswa"
-            style="@style/Widget.Material3.Button.Icon"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:paddingVertical="16dp"
-            android:text="Register Siswa Baru"
-            android:textSize="16sp"
-            app:icon="@drawable/ic_register"
-            app:iconGravity="textStart"
-            app:iconPadding="16dp" />
+        <LinearLayout style="@style/MainMenuContent">
+            <ImageView
+                style="@style/MainMenuIcon"
+                android:src="@drawable/ic_attendance" />
+            <TextView
+                style="@style/MainMenuText"
+                android:text="Absensi" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnListSiswa"
-            style="@style/Widget.Material3.Button.Icon"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:paddingVertical="16dp"
-            android:text="List Semua Siswa"
-            android:textSize="16sp"
-            app:icon="@drawable/ic_student_list"
-            app:iconGravity="textStart"
-            app:iconPadding="16dp" />
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardPembayaran"
+        style="@style/MainMenuCard"
+        app:layout_constraintBottom_toBottomOf="@id/cardAbsensi"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cardAbsensi"
+        app:layout_constraintTop_toTopOf="@id/cardAbsensi">
 
-    </LinearLayout>
+        <LinearLayout style="@style/MainMenuContent">
+            <ImageView
+                style="@style/MainMenuIcon"
+                android:src="@drawable/ic_payment" />
+            <TextView
+                style="@style/MainMenuText"
+                android:text="Pembayaran" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardRegister"
+        style="@style/MainMenuCard"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cardListSiswa"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardAbsensi">
+
+        <LinearLayout style="@style/MainMenuContent">
+            <ImageView
+                style="@style/MainMenuIcon"
+                android:src="@drawable/ic_register" />
+            <TextView
+                style="@style/MainMenuText"
+                android:text="Register Siswa" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardListSiswa"
+        style="@style/MainMenuCard"
+        app:layout_constraintBottom_toBottomOf="@id/cardRegister"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cardRegister"
+        app:layout_constraintTop_toTopOf="@id/cardRegister">
+
+        <LinearLayout style="@style/MainMenuContent">
+            <ImageView
+                style="@style/MainMenuIcon"
+                android:src="@drawable/ic_student_list" />
+            <TextView
+                style="@style/MainMenuText"
+                android:text="List Siswa" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

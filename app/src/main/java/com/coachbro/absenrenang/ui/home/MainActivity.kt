@@ -25,29 +25,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        binding.btnRegisterSiswa.setOnClickListener {
+        // Mengganti listener dari button ke CardView
+        binding.cardRegister.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
 
-        binding.btnListSiswa.setOnClickListener {
+        binding.cardListSiswa.setOnClickListener {
             val intent = Intent(this, StudentListActivity::class.java)
             startActivity(intent)
         }
 
-        binding.btnPembayaran.setOnClickListener {
+        binding.cardPembayaran.setOnClickListener {
             startActivity(Intent(this, PaymentActivity::class.java))
         }
 
-        binding.btnAbsensi.setOnClickListener {
+        binding.cardAbsensi.setOnClickListener {
             startActivity(Intent(this, AttendanceActivity::class.java))
         }
-
-
-
-        // Listener untuk tombol lain akan kita tambahkan di tahap berikutnya
-        // binding.btnAbsensi.setOnClickListener { ... }
-        // binding.btnPembayaran.setOnClickListener { ... }
-        // binding.btnListSiswa.setOnClickListener { ... }
     }
 }
