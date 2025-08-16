@@ -11,6 +11,9 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
+        android:background="@color/primary_blue"
+        app:titleTextColor="@color/white"
+        app:navigationIconTint="@color/white"
         android:layout_height="?attr/actionBarSize"
         app:title="Daftarkan Siswa Baru"
         app:navigationIcon="@drawable/ic_arrow_back" />

@@ -2,15 +2,19 @@
 package com.coachbro.absenrenang.ui.studentlist
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.coachbro.absenrenang.R
+import com.coachbro.absenrenang.data.model.Student
 import com.coachbro.absenrenang.databinding.ActivityStudentListBinding
 import com.coachbro.absenrenang.viewmodel.StudentListViewModel
-// Assuming your Student model is in this package, adjust if necessary
-import com.coachbro.absenrenang.data.model.Student
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class StudentListActivity : AppCompatActivity() {
 
@@ -25,8 +29,14 @@ class StudentListActivity : AppCompatActivity() {
 
         setupToolbar()
         setupRecyclerView()
+        setupSearch()
         observeViewModel()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        // Panggil fetchAllStudents di onResume agar data selalu yang terbaru
+        // setiap kali pengguna kembali ke layar ini.
         viewModel.fetchAllStudents()
     }
 
@@ -36,14 +46,16 @@ class StudentListActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupSearch() {
+        binding.etSearch.addTextChangedListener { text ->
+            viewModel.searchStudent(text.toString())
+        }
+    }
+
     private fun setupRecyclerView() {
-        // Pass a lambda for onItemClick
         studentAdapter = StudentAdapter { student ->
-            // Handle the item click here.
-            // For example, you might want to navigate to a detail screen
-            // or show a Toast with the student's name.
-            Toast.makeText(this@StudentListActivity, "Clicked on: ${student.name}", Toast.LENGTH_SHORT).show()
-            // Replace 'student.name' with the actual property you want to display
+            // Saat item di-klik, panggil fungsi untuk menampilkan dialog detail.
+            showStudentDetailDialog(student)
         }
         binding.rvStudents.apply {
             layoutManager = LinearLayoutManager(this@StudentListActivity)
@@ -70,5 +82,38 @@ class StudentListActivity : AppCompatActivity() {
         viewModel.errorMessage.observe(this) { message ->
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         }
+    }
+
+    /**
+     * Fungsi untuk membuat dan menampilkan dialog detail siswa.
+     * @param student Objek data siswa yang akan ditampilkan.
+     */
+    private fun showStudentDetailDialog(student: Student) {
+        // 1. Inflate layout custom dialog_student_detail.xml
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_student_detail, null)
+
+        // 2. Referensi ke semua TextView di dalam dialog
+        val tvName = dialogView.findViewById<TextView>(R.id.tvDetailStudentName)
+        val tvSessions = dialogView.findViewById<TextView>(R.id.tvDetailRemainingSessions)
+        val tvAge = dialogView.findViewById<TextView>(R.id.tvDetailAge)
+        val tvParentName = dialogView.findViewById<TextView>(R.id.tvDetailParentName)
+        val tvParentPhone = dialogView.findViewById<TextView>(R.id.tvDetailParentPhone)
+
+        // 3. Mengisi data ke dalam TextView
+        tvName.text = student.name
+        tvSessions.text = "Sisa Sesi: ${student.remainingSessions}"
+
+        // Logika untuk menampilkan data opsional: jika ada, tampilkan. Jika tidak, tampilkan "-".
+        tvAge.text = student.age?.toString()?.plus(" Tahun") ?: "-"
+        tvParentName.text = student.parentName ?: "-"
+        tvParentPhone.text = student.parentPhone ?: "-"
+
+        // 4. Membangun dan menampilkan MaterialAlertDialog
+        MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setPositiveButton("Tutup") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }

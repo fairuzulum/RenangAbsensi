@@ -6,15 +6,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#F4F8FB"
     tools:context=".ui.studentlist.StudentListActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
+        android:background="@color/primary_blue"
+        app:titleTextColor="@color/white"
+        app:navigationIconTint="@color/white"
         android:layout_height="?attr/actionBarSize"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:title="Daftar Semua Siswa" />
 
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:hint="Cari nama siswa..."
+        app:startIconDrawable="@drawable/ic_search">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -23,6 +40,8 @@
             android:id="@+id/rvStudents"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
             android:visibility="gone"
             tools:listitem="@layout/item_student"
             tools:visibility="visible"/>
