@@ -206,4 +206,33 @@ class StudentRepository {
             Result.failure(e)
         }
     }
+
+    // ===============================================================
+    // FUNGSI BARU UNTUK UPDATE DATA SISWA
+    // ===============================================================
+    suspend fun updateStudent(student: Student): Result<Unit> {
+        return try {
+            // Menggunakan ID dokumen untuk menargetkan siswa yang akan di-update
+            studentCollection.document(student.id).set(student).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // ===============================================================
+    // FUNGSI BARU UNTUK MENGHAPUS DATA SISWA
+    // ===============================================================
+    suspend fun deleteStudent(studentId: String): Result<Unit> {
+        return try {
+            // Hapus dokumen siswa beserta semua sub-collection di dalamnya
+            // (seperti riwayat absensi dan pembayaran) akan otomatis terhapus
+            // jika menggunakan fitur "Delete collection" dari Firebase Extensions.
+            // Untuk sekarang, kita hapus dokumen utamanya saja.
+            studentCollection.document(studentId).delete().await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

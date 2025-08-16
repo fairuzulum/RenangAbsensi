@@ -26,6 +26,15 @@ class StudentListViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
+    // ===============================================================
+    // LiveData BARU untuk status update dan delete
+    // ===============================================================
+    private val _updateStatus = MutableLiveData<Result<Unit>>()
+    val updateStatus: LiveData<Result<Unit>> = _updateStatus
+
+    private val _deleteStatus = MutableLiveData<Result<Unit>>()
+    val deleteStatus: LiveData<Result<Unit>> = _deleteStatus
+
     fun fetchAllStudents() {
         _isLoading.value = true
         viewModelScope.launch {
@@ -52,6 +61,26 @@ class StudentListViewModel : ViewModel() {
             _filteredStudents.value = list?.filter { student ->
                 student.name.contains(query, ignoreCase = true)
             }
+        }
+    }
+
+    // ===============================================================
+    // FUNGSI BARU UNTUK MEMANGGIL REPOSITORY UPDATE
+    // ===============================================================
+    fun updateStudent(student: Student) {
+        viewModelScope.launch {
+            val result = repository.updateStudent(student)
+            _updateStatus.postValue(result)
+        }
+    }
+
+    // ===============================================================
+    // FUNGSI BARU UNTUK MEMANGGIL REPOSITORY DELETE
+    // ===============================================================
+    fun deleteStudent(studentId: String) {
+        viewModelScope.launch {
+            val result = repository.deleteStudent(studentId)
+            _deleteStatus.postValue(result)
         }
     }
 }

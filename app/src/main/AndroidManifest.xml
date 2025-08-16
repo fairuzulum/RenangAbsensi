@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbsenRenang">
         <activity
+            android:name=".ui.studentlist.EditStudentActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.attendance.AttendanceDetailActivity"
             android:exported="false" />
         <activity
@@ -29,7 +32,6 @@
         <activity
             android:name=".ui.register.RegisterActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.financial.FinancialReportActivity"
             android:exported="false" />
