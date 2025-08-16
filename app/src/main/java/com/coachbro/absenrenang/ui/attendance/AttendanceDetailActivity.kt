@@ -89,17 +89,16 @@ class AttendanceDetailActivity : AppCompatActivity() {
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
+        // --- Perubahan di observer student ---
         viewModel.student.observe(this) { student ->
             student?.let {
                 binding.tvStudentName.text = it.name
-                binding.tvCurrentSessions.text = "${it.remainingSessions} Sesi"
+                // Mengubah cara set teks, hanya angkanya saja
+                binding.tvCurrentSessions.text = it.remainingSessions.toString()
                 updateButtonState(it.remainingSessions, hasAttendedToday)
             }
         }
 
-        // ===============================================================
-        // Observer BARU untuk mengamati status absensi harian dari ViewModel
-        // ===============================================================
         viewModel.hasAttendedToday.observe(this) { hasAttended ->
             this.hasAttendedToday = hasAttended
             viewModel.student.value?.let { student ->
@@ -122,6 +121,7 @@ class AttendanceDetailActivity : AppCompatActivity() {
         }
     }
 
+
     // ===============================================================
     // Fungsi helper BARU untuk mengelola semua kondisi tombol
     // ===============================================================
@@ -129,11 +129,10 @@ class AttendanceDetailActivity : AppCompatActivity() {
         if (hasAttended) {
             binding.btnMarkPresent.isEnabled = false
             binding.btnMarkPresent.text = "SUDAH ABSEN HARI INI"
-            binding.btnMarkPresent.setIconResource(R.drawable.ic_checklist) // Tampilkan ikon checklist
         } else if (remainingSessions <= 0) {
             binding.btnMarkPresent.isEnabled = false
             binding.btnMarkPresent.text = "Sesi Habis"
-            binding.btnMarkPresent.icon = null // Sembunyikan ikon
+            binding.btnMarkPresent.icon = null // Sembunyikan ikon jika sesi habis
         } else {
             binding.btnMarkPresent.isEnabled = true
             binding.btnMarkPresent.text = "Catat Kehadiran Hari Ini"
