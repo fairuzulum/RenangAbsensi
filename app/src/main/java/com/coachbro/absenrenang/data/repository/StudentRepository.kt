@@ -2,9 +2,10 @@
 package com.coachbro.absenrenang.data.repository
 
 import com.coachbro.absenrenang.data.model.Attendance
+import com.coachbro.absenrenang.data.model.FinancialReport
+import com.coachbro.absenrenang.data.model.MenuPasswords // <-- 1. Impor kelas baru
 import com.coachbro.absenrenang.data.model.Payment
 import com.coachbro.absenrenang.data.model.Student
-import com.coachbro.absenrenang.data.model.FinancialReport
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import java.util.Calendar
@@ -19,9 +20,14 @@ class StudentRepository {
 
     private val db = FirebaseFirestore.getInstance()
     private val studentCollection = db.collection("students")
+    // ===============================================================
+    // TAMBAHKAN KODE DI BAWAH INI
+    // ===============================================================
+    private val settingsCollection = db.collection("app_settings")
+    // ===============================================================
 
-    // ... (Fungsi registerStudent, getAllStudents, getStudentById, getPaymentHistory, processPayment, getAttendanceHistory biarkan sama)
 
+    // ... (Semua fungsi lain biarkan seperti semula)
     suspend fun registerStudent(student: Student): Result<Unit> {
         return try {
             studentCollection.add(student).await()
@@ -101,9 +107,6 @@ class StudentRepository {
         }
     }
 
-    // ===============================================================
-    // PERUBAHAN UTAMA ADA DI FUNGSI INI
-    // ===============================================================
     suspend fun processAttendance(studentId: String): Result<Unit> {
         try {
             db.runTransaction { transaction ->
@@ -159,7 +162,6 @@ class StudentRepository {
         }
     }
 
-    // ... (Fungsi getFinancialReport, updateStudent, deleteStudent biarkan sama)
     suspend fun getFinancialReport(): Result<List<FinancialReport>> {
         return try {
             coroutineScope {
@@ -212,10 +214,6 @@ class StudentRepository {
         }
     }
 
-
-    // ===============================================================
-    // FUNGSI BARU UNTUK UPDATE SESI SECARA MANUAL
-    // ===============================================================
     suspend fun updateStudentSessions(studentId: String, newSessionCount: Int): Result<Unit> {
         return try {
             // Menggunakan fungsi 'update' untuk mengubah satu field spesifik
@@ -223,6 +221,20 @@ class StudentRepository {
                 .update("remainingSessions", newSessionCount)
                 .await()
             Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    // ===============================================================
+    // FUNGSI BARU UNTUK MENGAMBIL PENGATURAN PIN
+    // ===============================================================
+    suspend fun getMenuPasswords(): Result<MenuPasswords?> {
+        return try {
+            val snapshot = settingsCollection.document("menuPasswords").get().await()
+            val passwords = snapshot.toObject<MenuPasswords>()
+            Result.success(passwords)
         } catch (e: Exception) {
             Result.failure(e)
         }
