@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbsenRenang">
         <activity
+            android:name=".ui.home.MainActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.studentlist.EditStudentActivity"
             android:exported="false" />
         <activity
@@ -36,7 +39,7 @@
             android:name=".ui.financial.FinancialReportActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.home.MainActivity"
+            android:name=".ui.auth.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
