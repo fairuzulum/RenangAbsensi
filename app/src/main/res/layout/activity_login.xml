@@ -8,56 +8,48 @@
     android:padding="24dp"
     tools:context=".ui.auth.LoginActivity">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.45" />
+
     <ImageView
         android:id="@+id/ivLogo"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_marginBottom="24dp"
         android:src="@drawable/logo_renang"
         app:layout_constraintBottom_toTopOf="@id/tvWelcome"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/tvWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="SwimTrack Pro Admin"
+        android:layout_marginBottom="32dp"
+        android:text="Login"
         android:textColor="@color/black"
         android:textSize="22sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/tvLoginEmail"
+        app:layout_constraintBottom_toTopOf="@id/tilEmail"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivLogo" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/tvLoginEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/tilPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvWelcome"
-        tools:text="admin@fss.com"
-        tools:visibility="visible" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:hint="Email"
-        app:layout_constraintBottom_toTopOf="@id/tilPassword"
+        app:layout_constraintBottom_toTopOf="@id/tvLoginEmail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvWelcome">
+        app:layout_constraintTop_toTopOf="@+id/guideline_center"
+        app:layout_constraintVertical_bias="0.3">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etEmail"
@@ -66,16 +58,32 @@
             android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/tvLoginEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/tilPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tilEmail"
+        tools:text="admin@fss.com"
+        tools:visibility="visible" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="Password"
-        app:layout_constraintBottom_toTopOf="@id/btnLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tilEmail"
+        app:layout_constraintTop_toBottomOf="@id/tvLoginEmail"
         app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -89,10 +97,10 @@
         android:id="@+id/btnLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:paddingVertical="14dp"
         android:text="Login"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tilPassword" />
