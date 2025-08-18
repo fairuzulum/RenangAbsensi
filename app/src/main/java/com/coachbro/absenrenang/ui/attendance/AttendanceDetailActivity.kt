@@ -70,7 +70,7 @@ class AttendanceDetailActivity : AppCompatActivity() {
 
             MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
                 .setTitle("Konfirmasi Absensi")
-                .setMessage("Yakin ingin mencatat kehadiran untuk ${studentName}? Sisa sesi akan berkurang 1.")
+                .setMessage("Yakin ingin mencatat kehadiran untuk ${studentName}? Sisa pertemuan akan berkurang 1.")
                 .setNegativeButton("Batal", null)
                 .setPositiveButton("Ya, Hadir") { _, _ ->
                     studentId?.let { viewModel.markAsPresent(it) }

@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Sisa Sesi Pertemuan"
+                android:text="Sisa Pertemuan"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@id/tvStudentName"
                 app:layout_constraintTop_toBottomOf="@id/tvStudentName" />

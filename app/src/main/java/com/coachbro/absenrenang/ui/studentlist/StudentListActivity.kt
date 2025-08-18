@@ -132,7 +132,7 @@ class StudentListActivity : AppCompatActivity() {
         btnSaveSessions.setOnClickListener {
             val newSessionString = etSessions.text.toString()
             if (newSessionString.isBlank()) {
-                Toast.makeText(this, "Jumlah sesi tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Jumlah pertemuan tidak boleh kosong", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             val newSessionCount = newSessionString.toInt()

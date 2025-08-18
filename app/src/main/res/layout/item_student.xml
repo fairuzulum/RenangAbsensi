@@ -88,7 +88,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="-4dp"
-                    android:text="Sesi"
+                    android:text="Pertemuan"
                     android:textColor="@color/primary_blue"
                     android:textSize="12sp"
                     tools:ignore="SmallSp" />

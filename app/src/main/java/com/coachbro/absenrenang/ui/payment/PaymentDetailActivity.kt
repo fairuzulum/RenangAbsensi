@@ -108,7 +108,7 @@ class PaymentDetailActivity : AppCompatActivity() {
         viewModel.student.observe(this) { student ->
             student?.let {
                 binding.tvStudentName.text = it.name
-                binding.tvCurrentSessions.text = "${it.remainingSessions} Sesi"
+                binding.tvCurrentSessions.text = "${it.remainingSessions} Pertemuan"
             }
         }
 
@@ -134,7 +134,3 @@ class PaymentDetailActivity : AppCompatActivity() {
         const val EXTRA_STUDENT_NAME = "extra_student_name"
     }
 }
-
-// **CATATAN**: Anda perlu membuat layout activity_payment_detail.xml yang berisi
-// Toolbar, TextView (tvStudentName, tvCurrentSessions), Button (btnAddPayment),
-// RecyclerView (rvPaymentHistory), ProgressBar, dan TextView (tvEmptyHistory).

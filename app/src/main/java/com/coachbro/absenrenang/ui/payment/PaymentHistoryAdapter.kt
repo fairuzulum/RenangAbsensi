@@ -27,7 +27,7 @@ class PaymentHistoryAdapter : ListAdapter<Payment, PaymentHistoryAdapter.Payment
             val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
             binding.tvPaymentAmount.text = formatRupiah.format(payment.amount)
 
-            binding.tvSessionsAdded.text = "+${payment.sessionsAdded} Sesi"
+            binding.tvSessionsAdded.text = "+${payment.sessionsAdded} Pertemuan"
         }
     }
 
