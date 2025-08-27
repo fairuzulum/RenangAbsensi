@@ -13,5 +13,6 @@ data class MenuPasswords(
     @get:PropertyName("keuangan") @set:PropertyName("keuangan") var keuangan: MenuSetting = MenuSetting(),
     @get:PropertyName("listSiswa") @set:PropertyName("listSiswa") var listSiswa: MenuSetting = MenuSetting(),
     @get:PropertyName("pembayaran") @set:PropertyName("pembayaran") var pembayaran: MenuSetting = MenuSetting(),
-    @get:PropertyName("register") @set:PropertyName("register") var register: MenuSetting = MenuSetting()
+    @get:PropertyName("register") @set:PropertyName("register") var register: MenuSetting = MenuSetting(),
+    @get:PropertyName("laporan") @set:PropertyName("laporan") var laporan: MenuSetting = MenuSetting()
 )

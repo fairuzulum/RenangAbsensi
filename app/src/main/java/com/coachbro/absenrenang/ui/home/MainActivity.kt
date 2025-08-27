@@ -97,16 +97,19 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        // ===============================================================
-        // TAMBAHKAN CLICK LISTENER UNTUK IKON LOGOUT DI SINI
-        // ===============================================================
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmationDialog()
         }
-        // ===============================================================
 
+        // ===============================================================
+        // UBAH CLICK LISTENER UNTUK LAPORAN KEHADIRAN DI SINI
+        // ===============================================================
         binding.cardAttendanceReport.setOnClickListener {
-            startActivity(Intent(this, AttendanceReportActivity::class.java))
+            handleMenuClick(
+                setting = menuPasswords?.laporan, // <-- Gunakan field 'laporan'
+                intent = Intent(this, AttendanceReportActivity::class.java),
+                menuName = "Laporan Kehadiran"
+            )
         }
     }
 
@@ -145,9 +148,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ===============================================================
-    // FUNGSI BARU UNTUK MENAMPILKAN DIALOG KONFIRMASI LOGOUT
-    // ===============================================================
     private fun showLogoutConfirmationDialog() {
         MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
             .setTitle("Konfirmasi Logout")
@@ -173,5 +173,4 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
-    // ===============================================================
 }
