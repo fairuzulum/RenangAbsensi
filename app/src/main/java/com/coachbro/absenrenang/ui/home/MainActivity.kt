@@ -18,10 +18,12 @@ import com.coachbro.absenrenang.ui.auth.LoginActivity
 import com.coachbro.absenrenang.ui.financial.FinancialReportActivity
 import com.coachbro.absenrenang.ui.payment.PaymentActivity
 import com.coachbro.absenrenang.ui.register.RegisterActivity
+import com.coachbro.absenrenang.ui.report.AttendanceReportActivity
 import com.coachbro.absenrenang.ui.studentlist.StudentListActivity
 import com.coachbro.absenrenang.viewmodel.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -102,6 +104,10 @@ class MainActivity : AppCompatActivity() {
             showLogoutConfirmationDialog()
         }
         // ===============================================================
+
+        binding.cardAttendanceReport.setOnClickListener {
+            startActivity(Intent(this, AttendanceReportActivity::class.java))
+        }
     }
 
     // ... (fungsi handleMenuClick dan showPinDialog biarkan seperti semula)

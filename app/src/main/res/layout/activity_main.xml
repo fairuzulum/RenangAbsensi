@@ -43,7 +43,6 @@
         style="@style/MainMenuCard"
         app:cardBackgroundColor="@color/sea_blue"
         app:layout_constraintBottom_toTopOf="@+id/cardRegister"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cardPembayaran"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -132,11 +131,9 @@
         style="@style/MainMenuCard"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/cardAttendanceReport"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardRegister"
-        app:layout_constraintWidth_percent="0.4">
+        app:layout_constraintTop_toBottomOf="@+id/cardRegister">
 
         <LinearLayout style="@style/MainMenuContent">
 
@@ -147,6 +144,27 @@
             <TextView
                 style="@style/MainMenuText"
                 android:text="Keuangan" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardAttendanceReport"
+        style="@style/MainMenuCard"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/white"
+        app:layout_constraintTop_toBottomOf="@+id/cardRegister"
+        app:layout_constraintStart_toEndOf="@id/cardFinancial"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout style="@style/MainMenuContent">
+
+            <ImageView
+                style="@style/MainMenuIcon"
+                android:src="@drawable/ic_attendance_report" />
+
+            <TextView
+                style="@style/MainMenuText"
+                android:text="Laporan Kehadiran" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -163,6 +181,7 @@
         app:layout_constraintBottom_toTopOf="@id/tvWatermark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@+id/tvWatermark"
         android:layout_width="wrap_content"

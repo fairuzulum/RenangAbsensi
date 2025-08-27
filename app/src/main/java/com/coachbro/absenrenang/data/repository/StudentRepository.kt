@@ -2,6 +2,7 @@
 package com.coachbro.absenrenang.data.repository
 
 import com.coachbro.absenrenang.data.model.Attendance
+import com.coachbro.absenrenang.data.model.AttendanceReport
 import com.coachbro.absenrenang.data.model.FinancialReport
 import com.coachbro.absenrenang.data.model.MenuPasswords // <-- 1. Impor kelas baru
 import com.coachbro.absenrenang.data.model.Payment
@@ -239,4 +240,40 @@ class StudentRepository {
             Result.failure(e)
         }
     }
+
+    // ===============================================================
+    // FUNGSI BARU UNTUK MENGAMBIL LAPORAN KEHADIRAN
+    // ===============================================================
+    suspend fun getAttendanceReport(startDate: Date, endDate: Date): Result<List<AttendanceReport>> {
+        return try {
+            coroutineScope {
+                val studentsSnapshot = studentCollection.get().await()
+                val students = studentsSnapshot.toObjects(Student::class.java)
+
+                val reportTasks = students.map { student ->
+                    async {
+                        val attendanceSnapshot = studentCollection.document(student.id)
+                            .collection("attendances")
+                            .whereGreaterThanOrEqualTo("date", startDate)
+                            .whereLessThanOrEqualTo("date", endDate)
+                            .get()
+                            .await()
+
+                        val attendances = attendanceSnapshot.toObjects(Attendance::class.java)
+                        attendances.map { attendance ->
+                            com.coachbro.absenrenang.data.model.AttendanceReport(studentName = student.name, attendanceDate = attendance.date)
+                        }
+                    }
+                }
+                val reports = reportTasks.awaitAll().flatten().sortedBy { it.attendanceDate }
+
+                Result.success(reports)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+
 }
