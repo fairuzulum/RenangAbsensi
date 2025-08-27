@@ -40,7 +40,10 @@ class StudentRepository {
 
     suspend fun getAllStudents(): Result<List<Student>> {
         return try {
-            val snapshot = studentCollection.get().await()
+            val snapshot = studentCollection
+                .orderBy("remainingSessions", Query.Direction.DESCENDING)
+                .get()
+                .await()
             val students = snapshot.toObjects(Student::class.java)
             Result.success(students)
         } catch (e: Exception) {
