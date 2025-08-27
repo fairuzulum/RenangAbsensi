@@ -2,7 +2,9 @@
 package com.coachbro.absenrenang.ui.payment
 
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
@@ -73,8 +75,32 @@ class PaymentDetailActivity : AppCompatActivity() {
     private fun showPaymentDialog() {
         val editText = EditText(this).apply {
             inputType = InputType.TYPE_CLASS_NUMBER
-            hint = "Contoh: 250000"
+            hint = "Contoh: 250.000"
         }
+
+        // Tambahkan TextWatcher untuk format Rupiah
+        editText.addTextChangedListener(object : TextWatcher {
+            private var current = ""
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable) {
+                if (s.toString() != current) {
+                    editText.removeTextChangedListener(this)
+
+                    // Hapus semua karakter non-digit
+                    val cleanString = s.toString().replace("[^0-9]".toRegex(), "")
+
+                    // Format ke xxx.xxx.xxx
+                    val formatted = formatRupiah(cleanString)
+
+                    current = formatted
+                    editText.setText(formatted)
+                    editText.setSelection(formatted.length)
+
+                    editText.addTextChangedListener(this)
+                }
+            }
+        })
 
         MaterialAlertDialogBuilder(this)
             .setTitle("Tambah Pembayaran Baru")
@@ -82,7 +108,7 @@ class PaymentDetailActivity : AppCompatActivity() {
             .setView(editText)
             .setNegativeButton("Batal", null)
             .setPositiveButton("Bayar") { _, _ ->
-                val amountString = editText.text.toString()
+                val amountString = editText.text.toString().replace("[^0-9]".toRegex(), "")
                 if (amountString.isBlank()) {
                     Toast.makeText(this, "Jumlah tidak boleh kosong", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
@@ -98,6 +124,21 @@ class PaymentDetailActivity : AppCompatActivity() {
                 studentId?.let { viewModel.addPayment(it, amount) }
             }
             .show()
+    }
+
+    // Fungsi untuk format ke xxx.xxx.xxx
+    private fun formatRupiah(input: String): String {
+        if (input.isEmpty()) return ""
+        val number = input.toLongOrNull() ?: return input
+        val result = StringBuilder()
+        val reversedInput = input.reversed()
+        for (i in reversedInput.indices) {
+            result.append(reversedInput[i])
+            if (i % 3 == 2 && i != reversedInput.length - 1) {
+                result.append('.')
+            }
+        }
+        return result.reverse().toString()
     }
 
     private fun observeViewModel() {
