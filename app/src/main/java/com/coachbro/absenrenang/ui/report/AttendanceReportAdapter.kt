@@ -1,3 +1,4 @@
+// fairuzulum/renangabsensi/RenangAbsensi-f6a1f8a5bfe74466545d06b313d4e1e548504b00/app/src/main/java/com/coachbro/absenrenang/ui/report/AttendanceReportAdapter.kt
 package com.coachbro.absenrenang.ui.report
 
 import android.view.LayoutInflater
@@ -18,7 +19,8 @@ class AttendanceReportAdapter :
         fun bind(report: AttendanceReport) {
             binding.tvStudentName.text = report.studentName
             report.attendanceDate?.let {
-                val format = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale("id", "ID"))
+                // UBAH FORMAT TANGGAL UNTUK MENAMPILKAN JAM DAN MENIT (HH:mm)
+                val format = SimpleDateFormat("EEEE, dd MMMM yyyy, HH:mm", Locale("id", "ID")) //
                 binding.tvAttendanceDate.text = format.format(it)
             }
         }
