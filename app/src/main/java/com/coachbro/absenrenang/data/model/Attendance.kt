@@ -5,7 +5,7 @@ import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
-data class Attendance(
+data class      Attendance(
     @DocumentId
     val id: String = "",
 

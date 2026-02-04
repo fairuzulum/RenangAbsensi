@@ -1,4 +1,3 @@
-// ui/financial/FinancialReportAdapter.kt
 package com.coachbro.absenrenang.ui.financial
 
 import android.view.LayoutInflater
@@ -9,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.coachbro.absenrenang.data.model.FinancialReport
 import com.coachbro.absenrenang.databinding.ItemFinancialReportBinding
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.Locale
 
 class FinancialReportAdapter :
@@ -19,9 +19,14 @@ class FinancialReportAdapter :
         fun bind(report: FinancialReport) {
             binding.tvStudentName.text = report.studentName
 
-            val localeID = Locale("in", "ID")
-            val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
-            binding.tvTotalAmount.text = formatRupiah.format(report.totalAmount)
+            // Format tanggal: 12 Okt 2023, 14:30
+            val dateLocale = Locale("id", "ID")
+            val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", dateLocale)
+            binding.tvPaymentDate.text = report.paymentDate?.let { dateFormat.format(it) } ?: "-"
+
+            val formatRupiah = NumberFormat.getCurrencyInstance(dateLocale)
+            // Gunakan 'amount' bukan 'totalAmount'
+            binding.tvTotalAmount.text = formatRupiah.format(report.amount)
         }
     }
 
@@ -40,7 +45,8 @@ class FinancialReportAdapter :
 
     class DiffCallback : DiffUtil.ItemCallback<FinancialReport>() {
         override fun areItemsTheSame(oldItem: FinancialReport, newItem: FinancialReport): Boolean {
-            return oldItem.studentName == newItem.studentName
+            // Bandingkan berdasarkan ID transaksi
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: FinancialReport, newItem: FinancialReport): Boolean {

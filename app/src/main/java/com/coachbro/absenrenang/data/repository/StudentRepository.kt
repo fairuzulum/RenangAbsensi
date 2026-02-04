@@ -1,10 +1,9 @@
-// data/repository/StudentRepository.kt
 package com.coachbro.absenrenang.data.repository
 
 import com.coachbro.absenrenang.data.model.Attendance
 import com.coachbro.absenrenang.data.model.AttendanceReport
 import com.coachbro.absenrenang.data.model.FinancialReport
-import com.coachbro.absenrenang.data.model.MenuPasswords // <-- 1. Impor kelas baru
+import com.coachbro.absenrenang.data.model.MenuPasswords
 import com.coachbro.absenrenang.data.model.Payment
 import com.coachbro.absenrenang.data.model.Student
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,14 +20,8 @@ class StudentRepository {
 
     private val db = FirebaseFirestore.getInstance()
     private val studentCollection = db.collection("students")
-    // ===============================================================
-    // TAMBAHKAN KODE DI BAWAH INI
-    // ===============================================================
     private val settingsCollection = db.collection("app_settings")
-    // ===============================================================
 
-
-    // ... (Semua fungsi lain biarkan seperti semula)
     suspend fun registerStudent(student: Student): Result<Unit> {
         return try {
             studentCollection.add(student).await()
@@ -64,7 +57,7 @@ class StudentRepository {
         return try {
             val snapshot = studentCollection.document(studentId)
                 .collection("payments")
-                .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .await()
             val payments = snapshot.toObjects(Payment::class.java)
@@ -101,7 +94,7 @@ class StudentRepository {
         return try {
             val snapshot = studentCollection.document(studentId)
                 .collection("attendances")
-                .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .await()
             val attendances = snapshot.toObjects(Attendance::class.java)
@@ -117,20 +110,11 @@ class StudentRepository {
                 val studentRef = studentCollection.document(studentId)
                 val studentSnapshot = transaction.get(studentRef)
                 val currentSessions = studentSnapshot.getLong("remainingSessions")?.toInt() ?: 0
-
-                // Blok validasi 'if (currentSessions <= 0)' DIHAPUS.
-                // Sekarang proses akan langsung lanjut ke pengurangan sesi.
-
                 val newTotalSessions = currentSessions - 1
-
-                // 1. Update (kurangi) sisa sesi di dokumen siswa
                 transaction.update(studentRef, "remainingSessions", newTotalSessions)
-
-                // 2. Buat catatan baru di sub-collection 'attendances'
                 val attendanceRef = studentRef.collection("attendances").document()
                 val newAttendance = Attendance()
                 transaction.set(attendanceRef, newAttendance)
-
             }.await()
             return Result.success(Unit)
         } catch (e: Exception) {
@@ -166,6 +150,7 @@ class StudentRepository {
         }
     }
 
+    // --- FUNGSI INI YANG DIUBAH SECARA SIGNIFIKAN ---
     suspend fun getFinancialReport(): Result<List<FinancialReport>> {
         return try {
             coroutineScope {
@@ -180,18 +165,23 @@ class StudentRepository {
                             .await()
 
                         val payments = paymentsSnapshot.toObjects(Payment::class.java)
-                        val totalAmountForStudent = payments.sumOf { it.amount }
 
-                        if (totalAmountForStudent > 0) {
-                            FinancialReport(studentName = student.name, totalAmount = totalAmountForStudent)
-                        } else {
-                            null
+                        // Map setiap pembayaran menjadi objek FinancialReport
+                        payments.map { payment ->
+                            FinancialReport(
+                                id = payment.id,
+                                studentName = student.name,
+                                amount = payment.amount,
+                                paymentDate = payment.date
+                            )
                         }
                     }
                 }
+
+                // Gabungkan semua list (flatten) dan urutkan berdasarkan tanggal descending (terbaru)
                 val reports = reportTasks.awaitAll()
-                    .filterNotNull()
-                    .sortedByDescending { it.totalAmount }
+                    .flatten()
+                    .sortedByDescending { it.paymentDate }
 
                 Result.success(reports)
             }
@@ -199,6 +189,7 @@ class StudentRepository {
             Result.failure(e)
         }
     }
+    // ------------------------------------------------
 
     suspend fun updateStudent(student: Student): Result<Unit> {
         return try {
@@ -220,7 +211,6 @@ class StudentRepository {
 
     suspend fun updateStudentSessions(studentId: String, newSessionCount: Int): Result<Unit> {
         return try {
-            // Menggunakan fungsi 'update' untuk mengubah satu field spesifik
             studentCollection.document(studentId)
                 .update("remainingSessions", newSessionCount)
                 .await()
@@ -230,10 +220,6 @@ class StudentRepository {
         }
     }
 
-
-    // ===============================================================
-    // FUNGSI BARU UNTUK MENGAMBIL PENGATURAN PIN
-    // ===============================================================
     suspend fun getMenuPasswords(): Result<MenuPasswords?> {
         return try {
             val snapshot = settingsCollection.document("menuPasswords").get().await()
@@ -244,9 +230,6 @@ class StudentRepository {
         }
     }
 
-    // ===============================================================
-    // FUNGSI BARU UNTUK MENGAMBIL LAPORAN KEHADIRAN
-    // ===============================================================
     suspend fun getAttendanceReport(startDate: Date, endDate: Date): Result<List<AttendanceReport>> {
         return try {
             coroutineScope {
@@ -276,7 +259,4 @@ class StudentRepository {
             Result.failure(e)
         }
     }
-
-
-
 }
