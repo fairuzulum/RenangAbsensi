@@ -6,4 +6,14 @@
     <color name="soft_blue">#E0F7FA</color>
     <color name="primary_blue">#0288D1</color>
     <color name="sea_blue">#4300FF</color>
+    <color name="gray">#757575</color>
+    <color name="primary">#0288D1</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="background">#F5F5F5</color>
+    <color name="card_stroke">#EEEEEE</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="divider">#F0F0F0</color>
+    <color name="error">#B00020</color>
+
 </resources>
