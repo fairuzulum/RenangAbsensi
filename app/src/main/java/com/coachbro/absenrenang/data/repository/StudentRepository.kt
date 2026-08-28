@@ -21,6 +21,7 @@ class StudentRepository {
     private val db = FirebaseFirestore.getInstance()
     private val studentCollection = db.collection("students")
     private val settingsCollection = db.collection("app_settings")
+    private val classificationCollection = db.collection("classifications")
 
     suspend fun registerStudent(student: Student): Result<Unit> {
         return try {
@@ -106,16 +107,36 @@ class StudentRepository {
 
     suspend fun processAttendance(studentId: String): Result<Unit> {
         try {
-            db.runTransaction { transaction ->
+            val isSessionsEmpty = db.runTransaction { transaction ->
                 val studentRef = studentCollection.document(studentId)
                 val studentSnapshot = transaction.get(studentRef)
                 val currentSessions = studentSnapshot.getLong("remainingSessions")?.toInt() ?: 0
                 val newTotalSessions = currentSessions - 1
+                
                 transaction.update(studentRef, "remainingSessions", newTotalSessions)
                 val attendanceRef = studentRef.collection("attendances").document()
                 val newAttendance = Attendance()
                 transaction.set(attendanceRef, newAttendance)
+
+                newTotalSessions <= 0
             }.await()
+
+            if (isSessionsEmpty) {
+                getStudentById(studentId).onSuccess { student ->
+                    val message = "⚠️ <b>PERINGATAN SESI HABIS</b>\n\nSiswa: <b>${student.name}</b>\nSisa Sesi: <b>0</b>\n\nSiswa ini telah melakukan absensi terakhir. Mohon segera infokan untuk pembayaran paket selanjutnya."
+                    
+                    getNotificationSettings().onSuccess { settings ->
+                        settings.recipientIds.forEach { chatId ->
+                            com.coachbro.absenrenang.utils.TelegramService.sendMessage(
+                                botToken = settings.botToken,
+                                chatId = chatId,
+                                message = message
+                            )
+                        }
+                    }
+                }
+            }
+
             return Result.success(Unit)
         } catch (e: Exception) {
             return Result.failure(e)
@@ -150,7 +171,6 @@ class StudentRepository {
         }
     }
 
-    // --- FUNGSI INI YANG DIUBAH SECARA SIGNIFIKAN ---
     suspend fun getFinancialReport(): Result<List<FinancialReport>> {
         return try {
             coroutineScope {
@@ -189,7 +209,6 @@ class StudentRepository {
             Result.failure(e)
         }
     }
-    // ------------------------------------------------
 
     suspend fun updateStudent(student: Student): Result<Unit> {
         return try {
@@ -225,6 +244,64 @@ class StudentRepository {
             val snapshot = settingsCollection.document("menuPasswords").get().await()
             val passwords = snapshot.toObject<MenuPasswords>()
             Result.success(passwords)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getNotificationSettings(): Result<com.coachbro.absenrenang.data.model.NotificationSettings> {
+        return try {
+            val snapshot = settingsCollection.document("notifications").get().await()
+            val settings = snapshot.toObject<com.coachbro.absenrenang.data.model.NotificationSettings>()
+            Result.success(settings ?: com.coachbro.absenrenang.data.model.NotificationSettings())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateNotificationSettings(settings: com.coachbro.absenrenang.data.model.NotificationSettings): Result<Unit> {
+        return try {
+            settingsCollection.document("notifications").set(settings).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // --- Klasifikasi Management ---
+    suspend fun getClassifications(): Result<List<com.coachbro.absenrenang.data.model.Classification>> {
+        return try {
+            val snapshot = classificationCollection.get().await()
+            val list = snapshot.toObjects(com.coachbro.absenrenang.data.model.Classification::class.java)
+            Result.success(list)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun addClassification(name: String, color: String): Result<Unit> {
+        return try {
+            val classification = com.coachbro.absenrenang.data.model.Classification(name = name, color = color)
+            classificationCollection.add(classification).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateClassification(classification: com.coachbro.absenrenang.data.model.Classification): Result<Unit> {
+        return try {
+            classificationCollection.document(classification.id).set(classification).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteClassification(id: String): Result<Unit> {
+        return try {
+            classificationCollection.document(id).delete().await()
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }

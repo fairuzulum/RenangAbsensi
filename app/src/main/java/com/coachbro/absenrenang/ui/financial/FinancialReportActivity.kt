@@ -45,55 +45,38 @@ class FinancialReportActivity : AppCompatActivity() {
     }
 
     private fun setupSearch() {
-        // Mencegah keyboard muncul otomatis
-        binding.etSearch.clearFocus()
-
-        // Listener ketika teks berubah
         binding.etSearch.doOnTextChanged { text, _, _, _ ->
             viewModel.filterReports(text.toString())
-            // Tampilkan/sembunyikan tombol clear
-            binding.tvClearSearch.visibility = if (text.isNullOrEmpty()) View.GONE else View.VISIBLE
-        }
-
-        // Tombol clear search diklik
-        binding.tvClearSearch.setOnClickListener {
-            binding.etSearch.text?.clear()
-            binding.etSearch.clearFocus()
-        }
-
-        // Atur agar ketika klik di luar EditText, keyboard akan tersembunyi
-        binding.root.setOnClickListener {
-            binding.etSearch.clearFocus()
         }
     }
 
     private fun observeViewModel() {
         viewModel.isLoading.observe(this) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            // Jangan tampilkan empty state saat loading
-            if (isLoading) {
-                binding.emptyStateLayout.visibility = View.GONE
-            }
+            binding.loadingLayout.root.visibility = if (isLoading) View.VISIBLE else View.GONE
+            if (isLoading) binding.tvEmpty.visibility = View.GONE
         }
 
         viewModel.totalRevenue.observe(this) { total ->
-            val localeID = Locale("in", "ID")
-            val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
-            // Hilangkan kode mata uang dan tambahkan "Rp" secara manual
-            val formatted = formatRupiah.format(total)
-                .replace("Rp", "") // Hapus Rp dari format (kalau ada)
-                .trim()
-            binding.tvTotalRevenue.text = "Rp $formatted"
+            val formatRupiah = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+            val formatted = formatRupiah.format(total).replace("Rp", "Rp ").trim()
+            binding.tvTotalRevenue.text = formatted
         }
 
         viewModel.reportData.observe(this) { reports ->
             val isEmpty = reports.isNullOrEmpty()
-            // Tampilkan/sembunyikan empty state layout
-            binding.emptyStateLayout.visibility = if (isEmpty) View.VISIBLE else View.GONE
-
-            // Tampilkan data jika ada
+            binding.tvEmpty.visibility = if (isEmpty && viewModel.isLoading.value != true) View.VISIBLE else View.GONE
+            
             if (!isEmpty) {
                 reportAdapter.submitList(reports)
+                
+                // Update Summary Stats
+                binding.tvTransactionCount.text = reports.size.toString()
+                val average = if (reports.isNotEmpty()) reports.sumOf { it.amount } / reports.size else 0L
+                val formatRupiah = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+                binding.tvAverageTransaction.text = formatRupiah.format(average).replace("Rp", "Rp ").trim()
+            } else {
+                binding.tvTransactionCount.text = "0"
+                binding.tvAverageTransaction.text = "Rp 0"
             }
         }
     }

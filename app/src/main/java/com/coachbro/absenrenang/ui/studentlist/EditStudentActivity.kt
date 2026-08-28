@@ -42,6 +42,8 @@ class EditStudentActivity : AppCompatActivity() {
         populateFormWithData()
         setupListeners()
         observeViewModel()
+        
+        viewModel.loadClassifications()
     }
 
     private fun setupToolbar() {
@@ -52,7 +54,9 @@ class EditStudentActivity : AppCompatActivity() {
     private fun populateFormWithData() {
         currentStudent?.let {
             binding.etName.setText(it.name)
-            binding.etNickname.setText(it.nickname ?: "") // Tampilkan nickname jika ada
+            binding.etNickname.setText(it.nickname ?: "")
+            binding.etPhoneNumber.setText(it.phoneNumber)
+            binding.actClassification.setText(it.classification.ifBlank { "Umum" }, false)
         }
     }
 
@@ -60,6 +64,8 @@ class EditStudentActivity : AppCompatActivity() {
         binding.btnSave.setOnClickListener {
             val fullName = binding.etName.text.toString().trim()
             val nickname = binding.etNickname.text.toString().trim()
+            val classification = binding.actClassification.text.toString().trim()
+            val phoneNumber = binding.etPhoneNumber.text.toString().trim()
 
             if (fullName.isBlank()) {
                 binding.tilName.error = "Nama lengkap tidak boleh kosong"
@@ -71,7 +77,9 @@ class EditStudentActivity : AppCompatActivity() {
             // Buat objek student baru dengan data yang sudah diupdate
             val updatedStudent = currentStudent!!.copy(
                 name = fullName,
-                nickname = nickname.ifBlank { null }
+                nickname = nickname.ifBlank { null },
+                classification = classification,
+                phoneNumber = phoneNumber
             )
             viewModel.updateStudent(updatedStudent)
         }
@@ -86,6 +94,13 @@ class EditStudentActivity : AppCompatActivity() {
             }.onFailure {
                 Toast.makeText(this, "Gagal memperbarui data: ${it.message}", Toast.LENGTH_LONG).show()
             }
+        }
+
+        viewModel.classifications.observe(this) { list ->
+            val names = list.map { it.name }.toMutableList()
+            if (!names.contains("Umum")) names.add(0, "Umum")
+            val adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, names)
+            binding.actClassification.setAdapter(adapter)
         }
     }
 

@@ -1,225 +1,193 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F4F8FB"
-    android:scrollbars="none"
-    android:fillViewport="true">
+    android:fitsSystemWindows="true"
+    android:background="@color/background">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".ui.home.MainActivity">
+        android:background="@color/white"
+        app:elevation="0dp"
+        app:liftOnScroll="false">
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="Family Surya School Club"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:padding="24dp">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardImageContainer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="24dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle">
-
-            <ImageView
-                android:id="@+id/iv_fss_team"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvGreeting"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:contentDescription="Foto Tim FSS"
-                android:src="@drawable/fssteam" />
+                android:text="Halo, Coach!"
+                android:textColor="@color/text_secondary"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        </com.google.android.material.card.MaterialCardView>
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Family Surya School Club"
+                android:textColor="@color/text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/ivProfile"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvGreeting" />
 
-        <View
-            android:id="@+id/divider"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:background="#DDDDDD"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardImageContainer" />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivProfile"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="2dp"
+                android:src="@drawable/logo_renang"
+                app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvGreeting"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+                app:strokeColor="@color/primary_blue"
+                app:strokeWidth="2dp" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardAbsensi"
-            style="@style/MainMenuCard"
-            android:layout_marginTop="24dp"
-            app:cardBackgroundColor="@color/sea_blue"
-            app:layout_constraintEnd_toStartOf="@+id/cardPembayaran"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider">
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-            <LinearLayout style="@style/MainMenuContent">
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <ImageView
-                    style="@style/MainMenuIcon"
-                    android:src="@drawable/ic_attendance"
-                    app:tint="@color/white"/>
-
-                <TextView
-                    style="@style/MainMenuText"
-                    android:text="Absen Kehadiran"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardPembayaran"
-            style="@style/MainMenuCard"
-            android:backgroundTint="@color/white"
-            app:layout_constraintBottom_toBottomOf="@id/cardAbsensi"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/cardAbsensi"
-            app:layout_constraintTop_toTopOf="@id/cardAbsensi">
-
-            <LinearLayout style="@style/MainMenuContent">
-
-                <ImageView
-                    style="@style/MainMenuIcon"
-                    android:src="@drawable/ic_payment" />
-
-                <TextView
-                    style="@style/MainMenuText"
-                    android:text="Pembayaran" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardRegister"
-            style="@style/MainMenuCard"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="@color/white"
-            app:layout_constraintEnd_toStartOf="@+id/cardListSiswa"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardAbsensi">
-
-            <LinearLayout style="@style/MainMenuContent">
-
-                <ImageView
-                    style="@style/MainMenuIcon"
-                    android:src="@drawable/ic_register" />
-
-                <TextView
-                    style="@style/MainMenuText"
-                    android:text="Register Siswa" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardListSiswa"
-            style="@style/MainMenuCard"
-            android:backgroundTint="@color/white"
-            app:layout_constraintBottom_toBottomOf="@id/cardRegister"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/cardRegister"
-            app:layout_constraintTop_toTopOf="@id/cardRegister">
-
-            <LinearLayout style="@style/MainMenuContent">
-
-                <ImageView
-                    style="@style/MainMenuIcon"
-                    android:src="@drawable/ic_student_list" />
-
-                <TextView
-                    style="@style/MainMenuText"
-                    android:text="Daftar Member FSS" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardFinancial"
-            style="@style/MainMenuCard"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="@color/white"
-            app:layout_constraintEnd_toStartOf="@id/cardAttendanceReport"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardRegister">
-
-            <LinearLayout style="@style/MainMenuContent">
-
-                <ImageView
-                    style="@style/MainMenuIcon"
-                    android:src="@drawable/ic_finance" />
-
-                <TextView
-                    style="@style/MainMenuText"
-                    android:text="Keuangan" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardAttendanceReport"
-            style="@style/MainMenuCard"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="@color/white"
-            app:layout_constraintTop_toBottomOf="@+id/cardRegister"
-            app:layout_constraintStart_toEndOf="@id/cardFinancial"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <LinearLayout style="@style/MainMenuContent">
-
-                <ImageView
-                    style="@style/MainMenuIcon"
-                    android:src="@drawable/ic_attendance_report" />
-
-                <TextView
-                    style="@style/MainMenuText"
-                    android:text="Laporan Kehadiran" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLogout"
-            style="@style/Widget.Material3.Button.TextButton.Icon"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Logout"
-            android:textColor="#757575"
-            app:icon="@drawable/ic_logout"
-            app:iconTint="#757575"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardFinancial" />
+            android:paddingBottom="24dp">
 
-        <TextView
-            android:id="@+id/tvWatermark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:text="Created by Fairuz"
-            android:textColor="#9E9E9E"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnLogout" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardImageContainer"
+                android:layout_width="0dp"
+                android:layout_height="180dp"
+                android:layout_marginHorizontal="24dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeWidth="0dp">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/iv_fss_team"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/fssteam" />
 
-</ScrollView>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/tvMenuHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:text="Menu Utama"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardImageContainer" />
+
+            <androidx.constraintlayout.helper.widget.Flow
+                android:id="@+id/menuFlow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="12dp"
+                app:constraint_referenced_ids="cardAbsensi,cardPembayaran,cardRegister,cardListSiswa,cardFinancial,cardAttendanceReport,cardSettings"
+                app:flow_horizontalGap="8dp"
+                app:flow_maxElementsWrap="2"
+                app:flow_verticalGap="8dp"
+                app:flow_wrapMode="aligned"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvMenuHeader" />
+
+            <!-- Menu Cards -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAbsensi"
+                style="@style/MainMenuCard"
+                app:cardBackgroundColor="@color/primary_blue"
+                app:strokeWidth="0dp">
+                <LinearLayout style="@style/MainMenuContent">
+                    <ImageView style="@style/MainMenuIcon" android:src="@drawable/ic_attendance" app:tint="@color/white"/>
+                    <TextView style="@style/MainMenuText" android:text="Absensi" android:textColor="@color/white"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardPembayaran"
+                style="@style/MainMenuCard"
+                >
+                <LinearLayout style="@style/MainMenuContent">
+                    <ImageView style="@style/MainMenuIcon" android:src="@drawable/ic_payment" />
+                    <TextView style="@style/MainMenuText" android:text="Pembayaran" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardRegister"
+                style="@style/MainMenuCard"
+                >
+                <LinearLayout style="@style/MainMenuContent">
+                    <ImageView style="@style/MainMenuIcon" android:src="@drawable/ic_register" />
+                    <TextView style="@style/MainMenuText" android:text="Register" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardListSiswa"
+                style="@style/MainMenuCard"
+                >
+                <LinearLayout style="@style/MainMenuContent">
+                    <ImageView style="@style/MainMenuIcon" android:src="@drawable/ic_student_list" />
+                    <TextView style="@style/MainMenuText" android:text="List Siswa" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardFinancial"
+                style="@style/MainMenuCard"
+                >
+                <LinearLayout style="@style/MainMenuContent">
+                    <ImageView style="@style/MainMenuIcon" android:src="@drawable/ic_finance" />
+                    <TextView style="@style/MainMenuText" android:text="Keuangan" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAttendanceReport"
+                style="@style/MainMenuCard"
+                >
+                <LinearLayout style="@style/MainMenuContent">
+                    <ImageView style="@style/MainMenuIcon" android:src="@drawable/ic_attendance_report" />
+                    <TextView style="@style/MainMenuText" android:text="Laporan" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSettings"
+                style="@style/MainMenuCard">
+                <LinearLayout style="@style/MainMenuContent">
+                    <ImageView style="@style/MainMenuIcon" android:src="@drawable/ic_settings" />
+                    <TextView style="@style/MainMenuText" android:text="Pengaturan" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

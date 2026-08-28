@@ -1,4 +1,3 @@
-// viewmodel/AttendanceViewModel.kt
 package com.coachbro.absenrenang.viewmodel
 
 import androidx.lifecycle.LiveData
@@ -6,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coachbro.absenrenang.data.model.Student
+import com.coachbro.absenrenang.data.model.Classification
 import com.coachbro.absenrenang.data.repository.StudentRepository
 import kotlinx.coroutines.launch
 
@@ -13,28 +13,27 @@ class AttendanceViewModel : ViewModel() {
 
     private val repository = StudentRepository()
 
-    // Menyimpan daftar asli siswa dari Firestore
     private val _originalStudents = MutableLiveData<List<Student>>()
 
-    // Menyimpan daftar siswa yang sudah difilter (untuk ditampilkan di UI)
     private val _filteredStudents = MutableLiveData<List<Student>>()
-    val filteredStudents: LiveData<List<Student>> = _filteredStudents
+    val students: LiveData<List<Student>> = _filteredStudents
 
-    // LiveData untuk state loading dan pesan error
+    private val _classifications = MutableLiveData<List<Classification>>()
+    val classifications: LiveData<List<Classification>> = _classifications
+
     val isLoading = MutableLiveData<Boolean>()
     val errorMessage = MutableLiveData<String>()
 
-    // Blok init dipanggil saat ViewModel pertama kali dibuat
     init {
         fetchAllStudents()
+        loadClassifications()
     }
 
-    // Fungsi untuk mengambil semua data siswa dari repository
     fun fetchAllStudents() {
         isLoading.value = true
         viewModelScope.launch {
+            kotlinx.coroutines.delay(2500) // Delay for skeleton
             repository.getAllStudents().onSuccess { studentList ->
-                // Jika sukses, simpan di daftar asli dan juga tampilkan di daftar filter
                 _originalStudents.postValue(studentList)
                 _filteredStudents.postValue(studentList)
             }.onFailure { exception ->
@@ -44,16 +43,23 @@ class AttendanceViewModel : ViewModel() {
         }
     }
 
-    // Fungsi untuk memfilter daftar siswa berdasarkan input pencarian
+    fun loadClassifications() {
+        viewModelScope.launch {
+            repository.getClassifications().onSuccess {
+                _classifications.postValue(it)
+            }
+        }
+    }
+
     fun searchStudent(query: String) {
         val list = _originalStudents.value
         if (query.isBlank()) {
-            _filteredStudents.value = list
+            _filteredStudents.value = list ?: emptyList()
         } else {
             _filteredStudents.value = list?.filter { student ->
-                // Cari di nama lengkap ATAU di nama panggilan
                 student.name.contains(query, ignoreCase = true) ||
-                        student.nickname?.contains(query, ignoreCase = true) == true
+                        student.nickname?.contains(query, ignoreCase = true) == true ||
+                        student.phoneNumber.contains(query)
             }
         }
     }

@@ -21,6 +21,8 @@ class RegisterActivity : AppCompatActivity() {
         setupToolbar()
         setupListeners()
         observeViewModel()
+        
+        viewModel.loadClassifications()
     }
 
     private fun setupToolbar() {
@@ -32,9 +34,11 @@ class RegisterActivity : AppCompatActivity() {
     private fun setupListeners() {
         binding.btnSave.setOnClickListener {
             val fullName = binding.etName.text.toString().trim()
-            val nickname = binding.etNickname.text.toString().trim() // Ambil dari etNickname
+            val nickname = binding.etNickname.text.toString().trim()
+            val classification = binding.actClassification.text.toString().trim()
+            val phoneNumber = binding.etPhoneNumber.text.toString().trim()
 
-            viewModel.registerStudent(fullName, nickname)
+            viewModel.registerStudent(fullName, nickname, classification, phoneNumber)
         }
     }
 
@@ -46,6 +50,18 @@ class RegisterActivity : AppCompatActivity() {
             }.onFailure { exception ->
                 binding.tilName.error = if(exception.message?.contains("kosong") == true) exception.message else null
                 Toast.makeText(this, "Error: ${exception.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        viewModel.classifications.observe(this) { list ->
+            val names = list.map { it.name }.toMutableList()
+            if (!names.contains("Umum")) names.add(0, "Umum")
+            
+            val adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, names)
+            binding.actClassification.setAdapter(adapter)
+            
+            if (binding.actClassification.text.isEmpty()) {
+                binding.actClassification.setText("Umum", false)
             }
         }
     }

@@ -3,7 +3,9 @@ package com.coachbro.absenrenang.ui.attendance
 
 import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -68,20 +70,34 @@ class AttendanceDetailActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                .setTitle("Konfirmasi Absensi")
-                .setMessage("Yakin ingin mencatat kehadiran untuk ${studentName}? Sisa pertemuan akan berkurang 1.")
-                .setNegativeButton("Batal", null)
-                .setPositiveButton("Ya, Hadir") { _, _ ->
-                    studentId?.let { viewModel.markAsPresent(it) }
-                }
-                .show()
+            showConfirmAttendanceDialog()
         }
+    }
+
+    private fun showConfirmAttendanceDialog() {
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_confirm_attendance, null)
+        dialog.setContentView(dialogView)
+
+        val tvMessage = dialogView.findViewById<TextView>(R.id.tvMessage)
+        val btnCancel = dialogView.findViewById<View>(R.id.btnCancel)
+        val btnConfirm = dialogView.findViewById<View>(R.id.btnConfirm)
+
+        tvMessage.text = "Yakin ingin mencatat kehadiran untuk ${studentName}? Sisa pertemuan akan berkurang 1."
+
+        btnCancel.setOnClickListener { dialog.dismiss() }
+
+        btnConfirm.setOnClickListener {
+            studentId?.let { viewModel.markAsPresent(it) }
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun observeViewModel() {
         viewModel.isLoading.observe(this) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.loadingLayout.root.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
         viewModel.student.observe(this) { student ->
@@ -89,12 +105,13 @@ class AttendanceDetailActivity : AppCompatActivity() {
                 binding.tvStudentName.text = it.name
                 binding.tvCurrentSessions.text = it.remainingSessions.toString()
 
-                // Logika baru untuk mengubah warna sesi jika minus
-                if (it.remainingSessions <= 0) {
-                    binding.tvCurrentSessions.setBackgroundColor(Color.parseColor("#D32F2F")) // Merah
+                // Warna teks sesi
+                val color = if (it.remainingSessions <= 0) {
+                    ContextCompat.getColor(this, R.color.error)
                 } else {
-                    binding.tvCurrentSessions.setBackgroundColor(ContextCompat.getColor(this, R.color.primary_blue))
+                    ContextCompat.getColor(this, R.color.primary_blue)
                 }
+                binding.tvCurrentSessions.setTextColor(color)
 
                 updateButtonState(hasAttendedToday)
             }
@@ -102,6 +119,11 @@ class AttendanceDetailActivity : AppCompatActivity() {
 
         viewModel.hasAttendedToday.observe(this) { hasAttended ->
             this.hasAttendedToday = hasAttended
+            binding.tvTodayStatus.text = if (hasAttended) "Sudah Absen" else "Belum Absen"
+            binding.tvTodayStatus.setTextColor(
+                if (hasAttended) ContextCompat.getColor(this, R.color.success)
+                else ContextCompat.getColor(this, R.color.gray_700)
+            )
             updateButtonState(hasAttended)
         }
 
@@ -126,11 +148,12 @@ class AttendanceDetailActivity : AppCompatActivity() {
     private fun updateButtonState(hasAttended: Boolean) {
         if (hasAttended) {
             binding.btnMarkPresent.isEnabled = false
-            binding.btnMarkPresent.text = "SUDAH ABSEN HARI INI"
+            binding.btnMarkPresent.text = "Siswa Sudah Hadir"
+            binding.btnMarkPresent.alpha = 0.5f
         } else {
-            // Tombol akan selalu aktif jika belum absen hari ini
             binding.btnMarkPresent.isEnabled = true
-            binding.btnMarkPresent.text = "Catat Kehadiran Hari Ini"
+            binding.btnMarkPresent.text = "Konfirmasi Kehadiran"
+            binding.btnMarkPresent.alpha = 1.0f
         }
     }
 

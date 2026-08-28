@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import com.coachbro.absenrenang.ui.financial.FinancialReportActivity
 import com.coachbro.absenrenang.ui.payment.PaymentActivity
 import com.coachbro.absenrenang.ui.register.RegisterActivity
 import com.coachbro.absenrenang.ui.report.AttendanceReportActivity
+import com.coachbro.absenrenang.ui.settings.SettingsActivity
 import com.coachbro.absenrenang.ui.studentlist.StudentListActivity
 import com.coachbro.absenrenang.viewmodel.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -36,8 +38,37 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupEntranceAnimations()
         observeViewModel()
         setupClickListeners()
+        
+        com.coachbro.absenrenang.utils.UpdateManager.checkUpdate(this)
+    }
+
+    private fun setupEntranceAnimations() {
+        val viewsToAnimate = listOf(
+            binding.cardImageContainer,
+            binding.tvMenuHeader,
+            binding.cardAbsensi,
+            binding.cardPembayaran,
+            binding.cardRegister,
+            binding.cardListSiswa,
+            binding.cardFinancial,
+            binding.cardAttendanceReport,
+            binding.cardSettings
+        )
+
+        viewsToAnimate.forEachIndexed { index, view ->
+            view.alpha = 0f
+            view.translationY = 50f
+            view.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(500)
+                .setStartDelay(100L * index)
+                .setInterpolator(android.view.animation.DecelerateInterpolator())
+                .start()
+        }
     }
 
     private fun observeViewModel() {
@@ -97,9 +128,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        binding.btnLogout.setOnClickListener {
-            showLogoutConfirmationDialog()
-        }
+
 
         // ===============================================================
         // UBAH CLICK LISTENER UNTUK LAPORAN KEHADIRAN DI SINI
@@ -111,9 +140,12 @@ class MainActivity : AppCompatActivity() {
                 menuName = "Laporan Kehadiran"
             )
         }
+
+        binding.cardSettings.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
     }
 
-    // ... (fungsi handleMenuClick dan showPinDialog biarkan seperti semula)
     private fun handleMenuClick(setting: MenuSetting?, intent: Intent, menuName: String) {
         Log.d("PinDebug", "Menu '$menuName' diklik. Setting: isEnabled=${setting?.isEnabled}, pin=${setting?.pin}")
 
@@ -129,16 +161,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun showPinDialog(correctPin: String, onSuccess: () -> Unit) {
         val dialogBinding = DialogPinEntryBinding.inflate(LayoutInflater.from(this))
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setView(dialogBinding.root)
-            .setCancelable(false)
-            .setPositiveButton("Buka", null)
-            .setNegativeButton("Batal") { d, _ -> d.dismiss() }
-            .show()
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        dialog.setContentView(dialogBinding.root)
 
-        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+        // Add a "Unlock" button to the BottomSheet or use a listener
+        // Since the original used PositiveButton, I'll add a button to the layout or just use a simple button here.
+        // Actually, let's just add a Button to dialogBinding if it doesn't have one, 
+        // OR better, I'll just use the PositiveButton style inside the BottomSheet.
+        
+        // Let's modify the dialogBinding to include a button for better UX in BottomSheet.
+        val btnUnlock = com.google.android.material.button.MaterialButton(this).apply {
+            text = "Buka Menu"
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = (24 * resources.displayMetrics.density).toInt()
+            }
+        }
+        (dialogBinding.root as LinearLayout).addView(btnUnlock)
+
+        btnUnlock.setOnClickListener {
             val enteredPin = dialogBinding.etPin.text.toString()
-
             if (enteredPin == correctPin) {
                 dialog.dismiss()
                 onSuccess()
@@ -146,31 +190,7 @@ class MainActivity : AppCompatActivity() {
                 dialogBinding.tilPin.error = "PIN Salah!"
             }
         }
-    }
 
-    private fun showLogoutConfirmationDialog() {
-        MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-            .setTitle("Konfirmasi Logout")
-            .setMessage("Apakah Anda yakin ingin keluar dari akun Anda?")
-            .setNegativeButton("Batal", null)
-            .setPositiveButton("Ya, Keluar") { _, _ ->
-                performLogout()
-            }
-            .show()
-    }
-
-    private fun performLogout() {
-        // Logout dari Firebase Auth
-        FirebaseAuth.getInstance().signOut()
-
-        // Hapus email yang tersimpan di SharedPreferences
-        val sharedPreferences = getSharedPreferences("SwimTrackPrefs", Context.MODE_PRIVATE)
-        sharedPreferences.edit().remove("USER_EMAIL").apply()
-
-        // Pindah ke LoginActivity dan bersihkan semua activity sebelumnya
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
+        dialog.show()
     }
 }

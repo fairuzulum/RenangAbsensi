@@ -26,18 +26,27 @@ class StudentListViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
-    // ===============================================================
-    // LiveData BARU untuk status update dan delete
-    // ===============================================================
     private val _updateStatus = MutableLiveData<Result<Unit>>()
     val updateStatus: LiveData<Result<Unit>> = _updateStatus
 
     private val _deleteStatus = MutableLiveData<Result<Unit>>()
     val deleteStatus: LiveData<Result<Unit>> = _deleteStatus
 
+    private val _classifications = MutableLiveData<List<com.coachbro.absenrenang.data.model.Classification>>()
+    val classifications: LiveData<List<com.coachbro.absenrenang.data.model.Classification>> = _classifications
+
+    fun loadClassifications() {
+        viewModelScope.launch {
+            repository.getClassifications().onSuccess {
+                _classifications.postValue(it)
+            }
+        }
+    }
+
     fun fetchAllStudents() {
         _isLoading.value = true
         viewModelScope.launch {
+            kotlinx.coroutines.delay(2500) // Extra delay for better skeleton visual
             val result = repository.getAllStudents()
             result.onSuccess { studentList ->
                 _originalStudents.postValue(studentList)
@@ -49,25 +58,19 @@ class StudentListViewModel : ViewModel() {
         }
     }
 
-    // ===============================================================
-    // FUNGSI BARU UNTUK SEARCH
-    // ===============================================================
     fun searchStudent(query: String) {
         val list = _originalStudents.value
         if (query.isBlank()) {
-            _filteredStudents.value = list
+            _filteredStudents.value = list ?: emptyList()
         } else {
             _filteredStudents.value = list?.filter { student ->
-                // Cari di nama lengkap ATAU di nama panggilan
                 student.name.contains(query, ignoreCase = true) ||
-                        student.nickname?.contains(query, ignoreCase = true) == true
+                        student.nickname?.contains(query, ignoreCase = true) == true ||
+                        student.phoneNumber.contains(query)
             }
         }
     }
 
-    // ===============================================================
-    // FUNGSI BARU UNTUK MEMANGGIL REPOSITORY UPDATE
-    // ===============================================================
     fun updateStudent(student: Student) {
         viewModelScope.launch {
             val result = repository.updateStudent(student)
@@ -75,9 +78,6 @@ class StudentListViewModel : ViewModel() {
         }
     }
 
-    // ===============================================================
-    // FUNGSI BARU UNTUK MEMANGGIL REPOSITORY DELETE
-    // ===============================================================
     fun deleteStudent(studentId: String) {
         viewModelScope.launch {
             val result = repository.deleteStudent(studentId)
@@ -85,13 +85,9 @@ class StudentListViewModel : ViewModel() {
         }
     }
 
-    // ===============================================================
-    // FUNGSI BARU UNTUK MEMANGGIL REPOSITORY UPDATE SESI
-    // ===============================================================
     fun updateStudentSessions(studentId: String, newSessionCount: Int) {
         viewModelScope.launch {
             val result = repository.updateStudentSessions(studentId, newSessionCount)
-            // Kita bisa gunakan _updateStatus yang sudah ada untuk memberitahu UI
             _updateStatus.postValue(result)
         }
     }

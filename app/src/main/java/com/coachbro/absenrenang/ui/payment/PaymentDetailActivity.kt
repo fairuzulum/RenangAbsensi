@@ -3,17 +3,20 @@ package com.coachbro.absenrenang.ui.payment
 
 import android.os.Bundle
 import android.text.Editable
-import android.text.InputType
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.coachbro.absenrenang.R
 import com.coachbro.absenrenang.databinding.ActivityPaymentDetailBinding
-import com.coachbro.absenrenang.viewmodel.PaymentDetailViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import com.coachbro.absenrenang.viewmodel.PaymentDetailViewModel
+import android.widget.TextView
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -73,57 +76,61 @@ class PaymentDetailActivity : AppCompatActivity() {
     }
 
     private fun showPaymentDialog() {
-        val editText = EditText(this).apply {
-            inputType = InputType.TYPE_CLASS_NUMBER
-            hint = "Contoh: 250.000"
-        }
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_payment, null)
+        dialog.setContentView(dialogView)
 
-        // Tambahkan TextWatcher untuk format Rupiah
-        editText.addTextChangedListener(object : TextWatcher {
+        val tilAmount = dialogView.findViewById<TextInputLayout>(R.id.tilAmount)
+        val etAmount = dialogView.findViewById<TextInputEditText>(R.id.etAmount)
+        val tvPreview = dialogView.findViewById<TextView>(R.id.tvSessionPreview)
+        val btnCancel = dialogView.findViewById<android.view.View>(R.id.btnCancel)
+        val btnPay = dialogView.findViewById<android.view.View>(R.id.btnPay)
+
+        etAmount.addTextChangedListener(object : TextWatcher {
             private var current = ""
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable) {
                 if (s.toString() != current) {
-                    editText.removeTextChangedListener(this)
-
-                    // Hapus semua karakter non-digit
+                    etAmount.removeTextChangedListener(this)
                     val cleanString = s.toString().replace("[^0-9]".toRegex(), "")
-
-                    // Format ke xxx.xxx.xxx
                     val formatted = formatRupiah(cleanString)
-
                     current = formatted
-                    editText.setText(formatted)
-                    editText.setSelection(formatted.length)
+                    etAmount.setText(formatted)
+                    etAmount.setSelection(formatted.length)
+                    etAmount.addTextChangedListener(this)
 
-                    editText.addTextChangedListener(this)
+                    // Update preview
+                    val amount = cleanString.toLongOrNull() ?: 0L
+                    if (amount > 0 && amount % 250000 == 0L) {
+                        val sessions = (amount / 250000) * 4
+                        tvPreview.text = "Akan menambah $sessions sesi"
+                        tvPreview.visibility = View.VISIBLE
+                        tilAmount.error = null
+                    } else {
+                        tvPreview.visibility = View.GONE
+                        if (amount > 0 && amount % 250000 != 0L) {
+                            tilAmount.error = "Harus kelipatan 250.000"
+                        }
+                    }
                 }
             }
         })
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Tambah Pembayaran Baru")
-            .setMessage("Masukkan jumlah pembayaran (kelipatan 250.000).")
-            .setView(editText)
-            .setNegativeButton("Batal", null)
-            .setPositiveButton("Bayar") { _, _ ->
-                val amountString = editText.text.toString().replace("[^0-9]".toRegex(), "")
-                if (amountString.isBlank()) {
-                    Toast.makeText(this, "Jumlah tidak boleh kosong", Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
+        btnCancel.setOnClickListener { dialog.dismiss() }
 
-                val amount = amountString.toLongOrNull()
-                if (amount == null || amount % 250000 != 0L) {
-                    Toast.makeText(this, "Jumlah harus kelipatan 250.000", Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-
-                // Panggil ViewModel untuk memproses pembayaran
+        btnPay.setOnClickListener {
+            val amountString = etAmount.text.toString().replace("[^0-9]".toRegex(), "")
+            val amount = amountString.toLongOrNull()
+            if (amount != null && amount > 0 && amount % 250000 == 0L) {
                 studentId?.let { viewModel.addPayment(it, amount) }
+                dialog.dismiss()
+            } else {
+                Toast.makeText(this, "Jumlah tidak valid", Toast.LENGTH_SHORT).show()
             }
-            .show()
+        }
+
+        dialog.show()
     }
 
     // Fungsi untuk format ke xxx.xxx.xxx
@@ -143,7 +150,7 @@ class PaymentDetailActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         viewModel.isLoading.observe(this) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.loadingLayout.root.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
         viewModel.student.observe(this) { student ->

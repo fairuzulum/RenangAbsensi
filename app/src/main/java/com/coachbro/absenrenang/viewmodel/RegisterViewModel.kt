@@ -15,8 +15,8 @@ class RegisterViewModel : ViewModel() {
     private val _registrationStatus = MutableLiveData<Result<Unit>>()
     val registrationStatus: LiveData<Result<Unit>> = _registrationStatus
 
-    // Fungsi disederhanakan hanya menerima nama lengkap dan panggilan
-    fun registerStudent(fullName: String, nickname: String) {
+    // Fungsi disederhanakan hanya menerima nama lengkap, panggilan, klasifikasi, dan nomor hp
+    fun registerStudent(fullName: String, nickname: String, classification: String, phoneNumber: String) {
         if (fullName.isBlank()) {
             _registrationStatus.value = Result.failure(Exception("Nama lengkap tidak boleh kosong"))
             return
@@ -24,12 +24,25 @@ class RegisterViewModel : ViewModel() {
 
         val student = Student(
             name = fullName,
-            nickname = nickname.ifBlank { null } // Simpan sebagai null jika kosong
+            nickname = nickname.ifBlank { null },
+            classification = classification,
+            phoneNumber = phoneNumber
         )
 
         viewModelScope.launch {
             val result = repository.registerStudent(student)
             _registrationStatus.postValue(result)
+        }
+    }
+
+    private val _classifications = MutableLiveData<List<com.coachbro.absenrenang.data.model.Classification>>()
+    val classifications: LiveData<List<com.coachbro.absenrenang.data.model.Classification>> = _classifications
+
+    fun loadClassifications() {
+        viewModelScope.launch {
+            repository.getClassifications().onSuccess {
+                _classifications.postValue(it)
+            }
         }
     }
 }

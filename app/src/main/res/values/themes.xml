@@ -2,6 +2,23 @@
 
     <style name="Base.Theme.AbsenRenang" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorSurfaceVariant">@color/white</item>
+        <item name="colorSurfaceContainer">@color/white</item>
+        <item name="android:colorBackground">@color/background</item>
+
+        <!-- Global override for potential pink tints -->
+        <item name="colorSecondary">@color/primary_blue</item>
+        <item name="colorTertiary">@color/primary_blue</item>
+        <item name="materialAlertDialogTheme">@style/Theme.App.AlertDialog</item>
+    </style>
+
+    <style name="Theme.App.AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorSurface">@color/white</item>
+        <item name="colorSurfaceVariant">@color/white</item>
+        <item name="colorSurfaceContainerHigh">@color/white</item>
+        <item name="colorSurfaceContainerHighest">@color/white</item>
+        <item name="android:backgroundTint">@color/white</item>
     </style>
 
     <style name="Theme.AbsenRenang" parent="Base.Theme.AbsenRenang" />
@@ -12,21 +29,42 @@
         <item name="postSplashScreenTheme">@style/Theme.AbsenRenang</item>
     </style>
 
+    <!-- Custom Theme for DatePicker to fix pink color -->
+    <style name="Theme.App.DatePicker" parent="ThemeOverlay.Material3.MaterialCalendar">
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+
+        <!-- Overwrite pink defaults in M3 -->
+        <item name="colorSecondary">@color/primary_blue</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorTertiary">@color/primary_blue</item>
+        <item name="colorOnTertiary">@color/white</item>
+
+        <item name="colorSecondaryContainer">@color/soft_blue</item>
+        <item name="colorOnSecondaryContainer">@color/primary_blue</item>
+        <item name="colorTertiaryContainer">@color/soft_blue</item>
+        <item name="colorOnTertiaryContainer">@color/primary_blue</item>
+
+        <item name="colorOutline">@color/divider</item>
+    </style>
+
     <style name="ThemeOverlay.Material3.MaterialAlertDialog.Centered" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="android:gravity">center</item>
     </style>
 
-    <style name="MainMenuCard" parent="Widget.Material3.CardView.Elevated">
+    <style name="MainMenuCard" parent="Widget.Material3.CardView.Filled">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="cardCornerRadius">16dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">0dp</item>
         <item name="cardUseCompatPadding">true</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
-        <item name="layout_constraintDimensionRatio">1:1</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">@color/divider</item>
     </style>
 
     <style name="MainMenuContent">

@@ -1,4 +1,3 @@
-// viewmodel/PaymentViewModel.kt
 package com.coachbro.absenrenang.viewmodel
 
 import androidx.lifecycle.LiveData
@@ -6,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coachbro.absenrenang.data.model.Student
+import com.coachbro.absenrenang.data.model.Classification
 import com.coachbro.absenrenang.data.repository.StudentRepository
 import kotlinx.coroutines.launch
 
@@ -15,18 +15,23 @@ class PaymentViewModel : ViewModel() {
     private val _originalStudents = MutableLiveData<List<Student>>()
 
     private val _filteredStudents = MutableLiveData<List<Student>>()
-    val filteredStudents: LiveData<List<Student>> = _filteredStudents
+    val students: LiveData<List<Student>> = _filteredStudents
+
+    private val _classifications = MutableLiveData<List<Classification>>()
+    val classifications: LiveData<List<Classification>> = _classifications
 
     val isLoading = MutableLiveData<Boolean>()
     val errorMessage = MutableLiveData<String>()
 
     init {
         fetchAllStudents()
+        loadClassifications()
     }
 
-    private fun fetchAllStudents() {
+    fun fetchAllStudents() {
         isLoading.value = true
         viewModelScope.launch {
+            kotlinx.coroutines.delay(2500) // Delay for skeleton
             repository.getAllStudents().onSuccess {
                 _originalStudents.postValue(it)
                 _filteredStudents.postValue(it)
@@ -37,15 +42,23 @@ class PaymentViewModel : ViewModel() {
         }
     }
 
+    fun loadClassifications() {
+        viewModelScope.launch {
+            repository.getClassifications().onSuccess {
+                _classifications.postValue(it)
+            }
+        }
+    }
+
     fun searchStudent(query: String) {
         val list = _originalStudents.value
         if (query.isBlank()) {
-            _filteredStudents.value = list
+            _filteredStudents.value = list ?: emptyList()
         } else {
             _filteredStudents.value = list?.filter { student ->
-                // Cari di nama lengkap ATAU di nama panggilan
                 student.name.contains(query, ignoreCase = true) ||
-                        student.nickname?.contains(query, ignoreCase = true) == true
+                        student.nickname?.contains(query, ignoreCase = true) == true ||
+                        student.phoneNumber.contains(query)
             }
         }
     }

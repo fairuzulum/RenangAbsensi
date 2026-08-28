@@ -1,4 +1,3 @@
-// ui/payment/PaymentActivity.kt
 package com.coachbro.absenrenang.ui.payment
 
 import android.content.Intent
@@ -8,74 +7,175 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.coachbro.absenrenang.R
+import com.coachbro.absenrenang.data.model.Student
+import com.coachbro.absenrenang.data.model.Classification
 import com.coachbro.absenrenang.databinding.ActivityPaymentBinding
 import com.coachbro.absenrenang.ui.studentlist.StudentAdapter
+import com.coachbro.absenrenang.ui.studentlist.FolderAdapter
 import com.coachbro.absenrenang.viewmodel.PaymentViewModel
+import com.coachbro.absenrenang.utils.startPulse
+import com.coachbro.absenrenang.utils.stopPulse
 
 class PaymentActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPaymentBinding
     private val viewModel: PaymentViewModel by viewModels()
     private lateinit var studentAdapter: StudentAdapter
+    private lateinit var folderAdapter: FolderAdapter
+
+    private var isShowingStudents = false
+    private var currentFolderName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPaymentBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isShowingStudents) {
+                    showFolders()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
+
         setupToolbar()
         setupRecyclerView()
         setupSearch()
         observeViewModel()
+        
+        showFolders()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchAllStudents()
+        viewModel.loadClassifications()
     }
 
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+            if (isShowingStudents) {
+                showFolders()
+            } else {
+                onBackPressedDispatcher.onBackPressed()
+            }
         }
     }
 
     private fun setupSearch() {
         binding.etSearch.addTextChangedListener { text ->
-            viewModel.searchStudent(text.toString())
+            if (isShowingStudents) {
+                viewModel.searchStudent(text.toString())
+            }
         }
     }
 
     private fun setupRecyclerView() {
-        // Inisialisasi adapter dengan aksi klik
-        studentAdapter = StudentAdapter { student ->
-            // Saat item siswa diklik, buka PaymentDetailActivity
-            val intent = Intent(this, PaymentDetailActivity::class.java).apply {
-                // Kirim ID dan Nama siswa ke activity berikutnya
-                putExtra(PaymentDetailActivity.EXTRA_STUDENT_ID, student.id)
-                putExtra(PaymentDetailActivity.EXTRA_STUDENT_NAME, student.name)
+        // Students
+        studentAdapter = StudentAdapter { student, _ ->
+            val intent = Intent(this, com.coachbro.absenrenang.ui.payment.PaymentDetailActivity::class.java).apply {
+                putExtra(com.coachbro.absenrenang.ui.payment.PaymentDetailActivity.EXTRA_STUDENT_ID, student.id)
+                putExtra(com.coachbro.absenrenang.ui.payment.PaymentDetailActivity.EXTRA_STUDENT_NAME, student.name)
             }
             startActivity(intent)
         }
-
         binding.rvStudents.apply {
             layoutManager = LinearLayoutManager(this@PaymentActivity)
             adapter = studentAdapter
         }
+
+        // Folders
+        folderAdapter = FolderAdapter { classification ->
+            showStudentsInFolder(classification)
+        }
+        binding.rvFolders.apply {
+            layoutManager = GridLayoutManager(this@PaymentActivity, 2)
+            adapter = folderAdapter
+        }
+    }
+
+    private fun showFolders() {
+        isShowingStudents = false
+        binding.viewFlipper.displayedChild = 0
+        binding.cardSearch.visibility = View.GONE
+        binding.toolbar.title = "Pilih Siswa (Pembayaran)"
+        viewModel.loadClassifications()
+    }
+
+    private fun showStudentsInFolder(classification: Classification) {
+        isShowingStudents = true
+        currentFolderName = classification.name
+        binding.viewFlipper.displayedChild = 1
+        binding.cardSearch.visibility = View.VISIBLE
+        binding.toolbar.title = currentFolderName
+        filterStudentsByFolder(currentFolderName)
+    }
+
+    private fun filterStudentsByFolder(folderName: String) {
+        val allStudents = viewModel.students.value ?: emptyList()
+        val filtered = when (folderName) {
+            "Umum" -> allStudents
+            "⚠️ Sesi Habis" -> allStudents.filter { it.remainingSessions <= 0 }
+            else -> allStudents.filter { it.classification == folderName }
+        }
+        studentAdapter.submitList(filtered)
+        binding.tvEmpty.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun observeViewModel() {
         viewModel.isLoading.observe(this) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            if (isLoading) {
+                if (isShowingStudents) {
+                    binding.layoutSkeletonStudents.visibility = View.VISIBLE
+                    binding.layoutSkeletonFolders.visibility = View.GONE
+                    binding.layoutSkeletonStudents.startPulse()
+                } else {
+                    binding.layoutSkeletonFolders.visibility = View.VISIBLE
+                    binding.layoutSkeletonStudents.visibility = View.GONE
+                    binding.layoutSkeletonFolders.startPulse()
+                }
+                binding.viewFlipper.visibility = View.GONE
+            } else {
+                binding.layoutSkeletonFolders.visibility = View.GONE
+                binding.layoutSkeletonStudents.visibility = View.GONE
+                binding.layoutSkeletonFolders.stopPulse()
+                binding.layoutSkeletonStudents.stopPulse()
+                binding.viewFlipper.visibility = View.VISIBLE
+            }
+        }
+
+        viewModel.students.observe(this) { 
+            updateFolders()
+            if (isShowingStudents) {
+                filterStudentsByFolder(currentFolderName)
+            }
+        }
+
+        viewModel.classifications.observe(this) { 
+            updateFolders()
         }
 
         viewModel.errorMessage.observe(this) { message ->
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         }
+    }
 
-        viewModel.filteredStudents.observe(this) { students ->
-            // Tampilkan/sembunyikan pesan "kosong" berdasarkan data
-            binding.tvEmpty.visibility = if (students.isNullOrEmpty()) View.VISIBLE else View.GONE
-            binding.rvStudents.visibility = if (students.isNullOrEmpty()) View.GONE else View.VISIBLE
-
-            // Kirim data ke adapter
-            studentAdapter.submitList(students)
+    private fun updateFolders() {
+        val classifications = viewModel.classifications.value ?: emptyList()
+        val allStudents = viewModel.students.value ?: emptyList()
+        val folderList = classifications.toMutableList()
+        folderList.add(0, Classification(id = "umum", name = "Umum", color = "#0084FF"))
+        val hasExpiredSessions = allStudents.any { it.remainingSessions <= 0 }
+        if (hasExpiredSessions) {
+            folderList.add(1, Classification(id = "expired", name = "⚠️ Sesi Habis", color = "#FF4B55"))
         }
+        folderAdapter.submitList(folderList)
     }
 }

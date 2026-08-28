@@ -4,205 +4,265 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:fitsSystemWindows="true"
+    android:background="@color/background"
+    tools:context=".ui.studentlist.StudentDetailActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        app:elevation="0dp">
+        android:background="@color/background"
+        app:elevation="0dp"
+        app:liftOnScroll="false">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/white"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:title="Detail Member"
-            app:titleTextColor="@color/black" />
+            app:title="Profil Siswa"
+            app:titleTextColor="@color/text_primary" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
+            android:id="@+id/containerDetail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp">
+            android:padding="20dp">
 
-            <!-- Profile Card -->
+            <!-- Name Section -->
+            <TextView
+                android:id="@+id/tvDetailName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:transitionName="student_name_transition"
+                tools:text="Fairuz Ulum" />
+
+            <TextView
+                android:id="@+id/tvDetailNickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="18sp"
+                tools:text="(Fairuz)" />
+
+            <!-- Highlighted Update Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUpdateBiodata"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Update Biodata Siswa"
+                android:textSize="12sp"
+                android:textColor="@color/primary_blue"
+                app:icon="@drawable/ic_edit"
+                app:iconSize="16dp"
+                app:iconTint="@color/primary_blue"
+                app:backgroundTint="@color/soft_blue"
+                app:cornerRadius="12dp"
+                style="@style/Widget.Material3.Button.TonalButton" />
+
+            <!-- Session Stats Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeColor="@color/card_stroke"
+                android:layout_marginTop="28dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
                 app:strokeWidth="1dp"
-                android:layout_marginBottom="24dp">
+                app:strokeColor="@color/divider">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:padding="24dp">
 
-                    <!-- Name Section -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/labelSessions"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
+                        android:text="Sisa Pertemuan"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                        <TextView
-                            android:id="@+id/tvDetailName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/black"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            tools:text="Nama Siswa" />
-
-                        <TextView
-                            android:id="@+id/tvDetailNickname"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="14sp"
-                            tools:text="(Nama Panggilan)" />
-                    </LinearLayout>
-
-                    <!-- Session Count -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Sisa Pertemuan"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp" />
+                    <!-- Circular Blue Bubble for Session Count -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/bubbleSession"
+                        android:layout_width="86dp"
+                        android:layout_height="86dp"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/primary_blue"
+                        app:cardCornerRadius="43dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labelSessions">
 
                         <TextView
                             android:id="@+id/tvSessionCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/bg_session_count"
-                            android:paddingHorizontal="16dp"
-                            android:paddingVertical="8dp"
-                            android:textColor="@color/primary"
-                            android:textSize="18sp"
+                            android:layout_gravity="center"
+                            android:textColor="@color/white"
+                            android:textSize="36sp"
                             android:textStyle="bold"
-                            tools:text="0" />
-                    </LinearLayout>
+                            tools:text="12" />
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Edit Session -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditSessions"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:background="@color/surface"
-                        android:padding="12dp"
-                        android:paddingVertical="16dp"
-                        android:clipToPadding="false">
+                        android:text="Sesuaikan"
+                        android:textSize="12sp"
+                        app:icon="@drawable/ic_edit"
+                        app:iconSize="16dp"
+                        app:cornerRadius="12dp"
+                        android:backgroundTint="@color/primary_blue"
+                        android:textColor="@color/white"
+                        app:iconTint="@color/white"
+                        app:layout_constraintBottom_toBottomOf="@id/bubbleSession"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/bubbleSession" />
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                            app:boxBackgroundColor="@android:color/white"
-                            app:boxCornerRadiusBottomEnd="8dp"
-                            app:boxCornerRadiusBottomStart="8dp"
-                            app:boxCornerRadiusTopEnd="8dp"
-                            app:boxCornerRadiusTopStart="8dp"
-                            app:hintEnabled="false"
-                            app:startIconDrawable="@drawable/ic_session">
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etEditSession"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Ubah sisa sesi"
-                                android:inputType="numberSigned"
-                                android:maxLines="1"
-                                android:textSize="14sp" />
-                        </com.google.android.material.textfield.TextInputLayout>
+            <!-- Student Info Card (Phone/WA) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardStudentInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/divider">
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnSaveSession"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_whatsapp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvDetailPhone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="Simpan"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
-                            app:icon="@drawable/ic_save"
-                            app:iconGravity="textStart" />
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            tools:text="08123456789" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Nomor WhatsApp"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
                     </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnOpenWA"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chat WA"
+                        android:textSize="12sp"
+                        android:textColor="#25D366"
+                        app:backgroundTint="#F0F9F0"
+                        app:cornerRadius="12dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Attendance Section -->
+            <!-- Accordion Sections -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Riwayat Aktivitas"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <!-- Attendance Accordion -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAttendance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!-- Header -->
                     <LinearLayout
                         android:id="@+id/btnToggleAttendance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
                         android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true">
+                        android:gravity="center_vertical"
+                        android:padding="18dp">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_attendance"
-                            android:tint="@color/primary"
-                            android:layout_marginEnd="12dp" />
+                            app:tint="@color/primary_blue" />
 
                         <TextView
                             android:id="@+id/tvAttendanceHeader"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
                             android:layout_weight="1"
                             android:text="Riwayat Kehadiran"
                             android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            android:textStyle="normal"/>
+                            android:textStyle="bold" />
 
                         <ImageView
                             android:id="@+id/ivAttendanceArrow"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_expand_more"
-                            android:tint="@color/text_secondary" />
+                            app:tint="@color/gray_500" />
                     </LinearLayout>
 
-                    <!-- Content -->
                     <LinearLayout
                         android:id="@+id/layoutAttendanceContent"
                         android:layout_width="match_parent"
@@ -210,87 +270,76 @@
                         android:orientation="vertical"
                         android:visibility="gone">
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/gray"
-                            android:layout_marginHorizontal="16dp" />
-
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvAttendanceHistory"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:nestedScrollingEnabled="false"
-                            android:paddingVertical="8dp"
                             android:paddingHorizontal="16dp"
-                            android:clipToPadding="false"
-                            tools:itemCount="3"
-                            tools:listitem="@layout/item_attendance_history" />
+                            android:paddingBottom="16dp" />
 
                         <TextView
                             android:id="@+id/tvEmptyAttendance"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="24dp"
-                            android:text="Belum ada riwayat kehadiran"
+                            android:text="Belum ada riwayat"
                             android:textAlignment="center"
                             android:textColor="@color/text_secondary"
-                            android:textSize="14sp"
                             android:visibility="gone" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Payment Section -->
+            <!-- Payment Accordion -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardPayment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp">
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!-- Header -->
                     <LinearLayout
                         android:id="@+id/btnTogglePayment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
                         android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true">
+                        android:gravity="center_vertical"
+                        android:padding="18dp">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_payment"
-                            android:tint="@color/primary"
-                            android:layout_marginEnd="12dp" />
+                            app:tint="@color/primary_blue" />
 
                         <TextView
                             android:id="@+id/tvPaymentHeader"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
                             android:layout_weight="1"
                             android:text="Riwayat Pembayaran"
                             android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            android:textStyle="normal" />
+                            android:textStyle="bold" />
 
                         <ImageView
                             android:id="@+id/ivPaymentArrow"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_expand_more"
-                            android:tint="@color/text_secondary" />
+                            app:tint="@color/gray_500" />
                     </LinearLayout>
 
-                    <!-- Content -->
                     <LinearLayout
                         android:id="@+id/layoutPaymentContent"
                         android:layout_width="match_parent"
@@ -298,32 +347,22 @@
                         android:orientation="vertical"
                         android:visibility="gone">
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/gray"
-                            android:layout_marginHorizontal="16dp" />
-
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvPaymentHistory"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:nestedScrollingEnabled="false"
-                            android:paddingVertical="8dp"
                             android:paddingHorizontal="16dp"
-                            android:clipToPadding="false"
-                            tools:itemCount="3"
-                            tools:listitem="@layout/item_payment_history" />
+                            android:paddingBottom="16dp" />
 
                         <TextView
                             android:id="@+id/tvEmptyPayment"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="24dp"
-                            android:text="Belum ada riwayat pembayaran"
+                            android:text="Belum ada riwayat"
                             android:textAlignment="center"
                             android:textColor="@color/text_secondary"
-                            android:textSize="14sp"
                             android:visibility="gone" />
                     </LinearLayout>
                 </LinearLayout>
@@ -332,11 +371,8 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+    <include
+        android:id="@+id/loadingLayout"
+        layout="@layout/layout_loading_overlay" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
