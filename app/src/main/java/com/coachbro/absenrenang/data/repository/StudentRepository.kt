@@ -18,6 +18,16 @@ import kotlinx.coroutines.coroutineScope
 
 class StudentRepository {
 
+    companion object {
+        private var cachedStudents: List<Student>? = null
+        private var cachedClassifications: List<com.coachbro.absenrenang.data.model.Classification>? = null
+
+        fun clearCache() {
+            cachedStudents = null
+            cachedClassifications = null
+        }
+    }
+
     private val db = FirebaseFirestore.getInstance()
     private val studentCollection = db.collection("students")
     private val settingsCollection = db.collection("app_settings")
@@ -26,19 +36,24 @@ class StudentRepository {
     suspend fun registerStudent(student: Student): Result<Unit> {
         return try {
             studentCollection.add(student).await()
+            cachedStudents = null
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun getAllStudents(): Result<List<Student>> {
+    suspend fun getAllStudents(forceRefresh: Boolean = false): Result<List<Student>> {
+        if (!forceRefresh && cachedStudents != null) {
+            return Result.success(cachedStudents!!)
+        }
         return try {
             val snapshot = studentCollection
                 .orderBy("remainingSessions", Query.Direction.DESCENDING)
                 .get()
                 .await()
             val students = snapshot.toObjects(Student::class.java)
+            cachedStudents = students
             Result.success(students)
         } catch (e: Exception) {
             Result.failure(e)
@@ -78,13 +93,15 @@ class StudentRepository {
             db.runTransaction { transaction ->
                 val studentRef = studentCollection.document(studentId)
                 val studentSnapshot = transaction.get(studentRef)
+                val studentName = studentSnapshot.getString("name") ?: ""
                 val currentSessions = studentSnapshot.getLong("remainingSessions")?.toInt() ?: 0
                 val newTotalSessions = currentSessions + sessionsToAdd
                 transaction.update(studentRef, "remainingSessions", newTotalSessions)
                 val paymentRef = studentRef.collection("payments").document()
-                val newPayment = Payment(amount = amount, sessionsAdded = sessionsToAdd)
+                val newPayment = Payment(amount = amount, sessionsAdded = sessionsToAdd, studentName = studentName)
                 transaction.set(paymentRef, newPayment)
             }.await()
+            cachedStudents = null
             return Result.success(Unit)
         } catch (e: Exception) {
             return Result.failure(e)
@@ -110,16 +127,19 @@ class StudentRepository {
             val isSessionsEmpty = db.runTransaction { transaction ->
                 val studentRef = studentCollection.document(studentId)
                 val studentSnapshot = transaction.get(studentRef)
+                val studentName = studentSnapshot.getString("name") ?: ""
                 val currentSessions = studentSnapshot.getLong("remainingSessions")?.toInt() ?: 0
                 val newTotalSessions = currentSessions - 1
                 
                 transaction.update(studentRef, "remainingSessions", newTotalSessions)
                 val attendanceRef = studentRef.collection("attendances").document()
-                val newAttendance = Attendance()
+                val newAttendance = Attendance(studentName = studentName)
                 transaction.set(attendanceRef, newAttendance)
 
                 newTotalSessions <= 0
             }.await()
+
+            cachedStudents = null
 
             if (isSessionsEmpty) {
                 getStudentById(studentId).onSuccess { student ->
@@ -173,38 +193,25 @@ class StudentRepository {
 
     suspend fun getFinancialReport(): Result<List<FinancialReport>> {
         return try {
-            coroutineScope {
-                val studentsSnapshot = studentCollection.get().await()
-                val students = studentsSnapshot.toObjects(Student::class.java)
+            val paymentsSnapshot = db.collectionGroup("payments")
+                .orderBy("date", Query.Direction.DESCENDING)
+                .limit(200)
+                .get()
+                .await()
 
-                val reportTasks = students.map { student ->
-                    async {
-                        val paymentsSnapshot = studentCollection.document(student.id)
-                            .collection("payments")
-                            .get()
-                            .await()
+            val reports = paymentsSnapshot.documents.mapNotNull { doc ->
+                val payment = doc.toObject(Payment::class.java)
+                val name = payment?.studentName?.takeIf { it.isNotBlank() } ?: "Siswa"
 
-                        val payments = paymentsSnapshot.toObjects(Payment::class.java)
+                FinancialReport(
+                    id = doc.id,
+                    studentName = name,
+                    amount = payment?.amount ?: 0L,
+                    paymentDate = payment?.date
+                )
+            }.sortedByDescending { it.paymentDate }
 
-                        // Map setiap pembayaran menjadi objek FinancialReport
-                        payments.map { payment ->
-                            FinancialReport(
-                                id = payment.id,
-                                studentName = student.name,
-                                amount = payment.amount,
-                                paymentDate = payment.date
-                            )
-                        }
-                    }
-                }
-
-                // Gabungkan semua list (flatten) dan urutkan berdasarkan tanggal descending (terbaru)
-                val reports = reportTasks.awaitAll()
-                    .flatten()
-                    .sortedByDescending { it.paymentDate }
-
-                Result.success(reports)
-            }
+            Result.success(reports)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -213,6 +220,7 @@ class StudentRepository {
     suspend fun updateStudent(student: Student): Result<Unit> {
         return try {
             studentCollection.document(student.id).set(student).await()
+            cachedStudents = null
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -222,6 +230,7 @@ class StudentRepository {
     suspend fun deleteStudent(studentId: String): Result<Unit> {
         return try {
             studentCollection.document(studentId).delete().await()
+            cachedStudents = null
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -233,6 +242,7 @@ class StudentRepository {
             studentCollection.document(studentId)
                 .update("remainingSessions", newSessionCount)
                 .await()
+            cachedStudents = null
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -269,10 +279,14 @@ class StudentRepository {
     }
 
     // --- Klasifikasi Management ---
-    suspend fun getClassifications(): Result<List<com.coachbro.absenrenang.data.model.Classification>> {
+    suspend fun getClassifications(forceRefresh: Boolean = false): Result<List<com.coachbro.absenrenang.data.model.Classification>> {
+        if (!forceRefresh && cachedClassifications != null) {
+            return Result.success(cachedClassifications!!)
+        }
         return try {
             val snapshot = classificationCollection.get().await()
             val list = snapshot.toObjects(com.coachbro.absenrenang.data.model.Classification::class.java)
+            cachedClassifications = list
             Result.success(list)
         } catch (e: Exception) {
             Result.failure(e)
@@ -283,6 +297,7 @@ class StudentRepository {
         return try {
             val classification = com.coachbro.absenrenang.data.model.Classification(name = name, color = color)
             classificationCollection.add(classification).await()
+            cachedClassifications = null
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -292,6 +307,7 @@ class StudentRepository {
     suspend fun updateClassification(classification: com.coachbro.absenrenang.data.model.Classification): Result<Unit> {
         return try {
             classificationCollection.document(classification.id).set(classification).await()
+            cachedClassifications = null
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -301,6 +317,7 @@ class StudentRepository {
     suspend fun deleteClassification(id: String): Result<Unit> {
         return try {
             classificationCollection.document(id).delete().await()
+            cachedClassifications = null
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -309,29 +326,23 @@ class StudentRepository {
 
     suspend fun getAttendanceReport(startDate: Date, endDate: Date): Result<List<AttendanceReport>> {
         return try {
-            coroutineScope {
-                val studentsSnapshot = studentCollection.get().await()
-                val students = studentsSnapshot.toObjects(Student::class.java)
+            val attendanceSnapshot = db.collectionGroup("attendances")
+                .whereGreaterThanOrEqualTo("date", startDate)
+                .whereLessThanOrEqualTo("date", endDate)
+                .get()
+                .await()
 
-                val reportTasks = students.map { student ->
-                    async {
-                        val attendanceSnapshot = studentCollection.document(student.id)
-                            .collection("attendances")
-                            .whereGreaterThanOrEqualTo("date", startDate)
-                            .whereLessThanOrEqualTo("date", endDate)
-                            .get()
-                            .await()
+            val reports = attendanceSnapshot.documents.mapNotNull { doc ->
+                val attendance = doc.toObject(Attendance::class.java)
+                val name = attendance?.studentName?.takeIf { it.isNotBlank() } ?: "Siswa"
 
-                        val attendances = attendanceSnapshot.toObjects(Attendance::class.java)
-                        attendances.map { attendance ->
-                            com.coachbro.absenrenang.data.model.AttendanceReport(studentName = student.name, attendanceDate = attendance.date)
-                        }
-                    }
-                }
-                val reports = reportTasks.awaitAll().flatten().sortedBy { it.attendanceDate }
+                com.coachbro.absenrenang.data.model.AttendanceReport(
+                    studentName = name,
+                    attendanceDate = attendance?.date
+                )
+            }.sortedByDescending { it.attendanceDate }
 
-                Result.success(reports)
-            }
+            Result.success(reports)
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -43,11 +43,10 @@ class StudentListViewModel : ViewModel() {
         }
     }
 
-    fun fetchAllStudents() {
+    fun fetchAllStudents(forceRefresh: Boolean = false) {
         _isLoading.value = true
         viewModelScope.launch {
-            kotlinx.coroutines.delay(2500) // Extra delay for better skeleton visual
-            val result = repository.getAllStudents()
+            val result = repository.getAllStudents(forceRefresh)
             result.onSuccess { studentList ->
                 _originalStudents.postValue(studentList)
                 _filteredStudents.postValue(studentList) // Isi kedua list saat pertama kali fetch

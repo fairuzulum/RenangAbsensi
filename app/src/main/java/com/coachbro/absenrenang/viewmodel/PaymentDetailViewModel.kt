@@ -41,6 +41,26 @@ class PaymentDetailViewModel : ViewModel() {
         viewModelScope.launch {
             val result = repository.processPayment(studentId, amount)
             _paymentStatus.postValue(result) // Kirim hasilnya ke UI
+
+            if (result.isSuccess) {
+                val sessionsToAdd = ((amount / 250000) * 4).toInt()
+                val currentStudent = _student.value
+                if (currentStudent != null) {
+                    val updatedStudent = currentStudent.copy(
+                        remainingSessions = currentStudent.remainingSessions + sessionsToAdd
+                    )
+                    _student.postValue(updatedStudent)
+                }
+
+                val currentHistory = _paymentHistory.value ?: emptyList()
+                val newPayment = Payment(
+                    amount = amount,
+                    sessionsAdded = sessionsToAdd.toLong(),
+                    date = java.util.Date()
+                )
+                _paymentHistory.postValue(listOf(newPayment) + currentHistory)
+            }
+
             _isLoading.postValue(false)
         }
     }

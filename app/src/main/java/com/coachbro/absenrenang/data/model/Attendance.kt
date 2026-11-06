@@ -12,5 +12,7 @@ data class      Attendance(
     // Firestore akan otomatis mengisi tanggal dan waktu absensi
     // sesuai waktu di server.
     @ServerTimestamp
-    val date: Date? = null
+    val date: Date? = null,
+
+    val studentName: String = "" // Nama siswa untuk laporan terpusat
 )

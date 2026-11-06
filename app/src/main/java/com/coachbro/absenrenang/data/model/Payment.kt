@@ -15,5 +15,6 @@ data class Payment(
     val date: Date? = null,
 
     val amount: Long = 0, // Jumlah uang yang dibayarkan
-    val sessionsAdded: Long = 0 // Jumlah sesi yang didapat
+    val sessionsAdded: Long = 0, // Jumlah sesi yang didapat
+    val studentName: String = "" // Nama siswa untuk laporan terpusat
 )

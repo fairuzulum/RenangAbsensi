@@ -34,6 +34,7 @@ class StudentDetailActivity : AppCompatActivity() {
 
     private var currentStudentId: String? = null
     private var currentStudent: Student? = null
+    private var isFirstLoad = true
 
     companion object {
         const val EXTRA_STUDENT_ID = "extra_student_id"
@@ -62,7 +63,10 @@ class StudentDetailActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        currentStudentId?.let { viewModel.loadStudentData(it) }
+        if (!isFirstLoad) {
+            currentStudentId?.let { viewModel.loadStudentData(it) }
+        }
+        isFirstLoad = false
     }
 
     private fun setupToolbar() {

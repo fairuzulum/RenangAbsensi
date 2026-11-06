@@ -135,7 +135,6 @@ class AttendanceDetailActivity : AppCompatActivity() {
         viewModel.attendanceStatus.observe(this) { result ->
             result.onSuccess {
                 Toast.makeText(this, "Kehadiran berhasil dicatat!", Toast.LENGTH_SHORT).show()
-                studentId?.let { viewModel.fetchStudentDetails(it) }
             }.onFailure { exception ->
                 Toast.makeText(this, "Gagal: ${exception.message}", Toast.LENGTH_LONG).show()
             }

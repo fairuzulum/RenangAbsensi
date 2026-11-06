@@ -29,11 +29,10 @@ class AttendanceViewModel : ViewModel() {
         loadClassifications()
     }
 
-    fun fetchAllStudents() {
+    fun fetchAllStudents(forceRefresh: Boolean = false) {
         isLoading.value = true
         viewModelScope.launch {
-            kotlinx.coroutines.delay(2500) // Delay for skeleton
-            repository.getAllStudents().onSuccess { studentList ->
+            repository.getAllStudents(forceRefresh).onSuccess { studentList ->
                 _originalStudents.postValue(studentList)
                 _filteredStudents.postValue(studentList)
             }.onFailure { exception ->

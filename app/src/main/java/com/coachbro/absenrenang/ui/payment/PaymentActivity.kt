@@ -53,12 +53,6 @@ class PaymentActivity : AppCompatActivity() {
         showFolders()
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.fetchAllStudents()
-        viewModel.loadClassifications()
-    }
-
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener {
             if (isShowingStudents) {

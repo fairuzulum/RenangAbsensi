@@ -168,8 +168,6 @@ class PaymentDetailActivity : AppCompatActivity() {
         viewModel.paymentStatus.observe(this) { result ->
             result.onSuccess {
                 Toast.makeText(this, "Pembayaran berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
-                // PENTING: Ambil ulang data untuk me-refresh layar
-                studentId?.let { viewModel.fetchStudentDetails(it) }
             }.onFailure {
                 Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_LONG).show()
             }

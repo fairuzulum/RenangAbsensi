@@ -55,12 +55,21 @@ class AttendanceDetailViewModel : ViewModel() {
             val result = repository.processAttendance(studentId)
             _attendanceStatus.postValue(result)
 
-            // ===============================================================
-            // Optimasi: Jika absensi berhasil, langsung update status di ViewModel
-            // tanpa perlu query ulang. Ini membuat UI lebih responsif.
-            // ===============================================================
             if (result.isSuccess) {
                 _hasAttendedToday.postValue(true)
+
+                // Update data lokal agar UI langsung ter-refresh tanpa query ulang ke Firestore
+                val currentStudent = _student.value
+                if (currentStudent != null) {
+                    val updatedStudent = currentStudent.copy(
+                        remainingSessions = (currentStudent.remainingSessions - 1).coerceAtLeast(0)
+                    )
+                    _student.postValue(updatedStudent)
+                }
+
+                val currentHistory = _attendanceHistory.value ?: emptyList()
+                val newAttendance = Attendance(date = java.util.Date())
+                _attendanceHistory.postValue(listOf(newAttendance) + currentHistory)
             }
 
             _isLoading.postValue(false)

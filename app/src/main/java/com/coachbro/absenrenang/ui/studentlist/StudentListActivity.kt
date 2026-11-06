@@ -51,10 +51,6 @@ class StudentListActivity : AppCompatActivity() {
         observeViewModel()
         
         showFolders()
-    }
-
-    override fun onResume() {
-        super.onResume()
         viewModel.fetchAllStudents()
         viewModel.loadClassifications()
     }

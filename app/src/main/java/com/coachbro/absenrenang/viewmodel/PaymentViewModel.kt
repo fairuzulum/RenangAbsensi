@@ -28,11 +28,10 @@ class PaymentViewModel : ViewModel() {
         loadClassifications()
     }
 
-    fun fetchAllStudents() {
+    fun fetchAllStudents(forceRefresh: Boolean = false) {
         isLoading.value = true
         viewModelScope.launch {
-            kotlinx.coroutines.delay(2500) // Delay for skeleton
-            repository.getAllStudents().onSuccess {
+            repository.getAllStudents(forceRefresh).onSuccess {
                 _originalStudents.postValue(it)
                 _filteredStudents.postValue(it)
             }.onFailure {
